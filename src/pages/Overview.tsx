@@ -10,7 +10,6 @@ import {
 
 const Overview = () => {
   const currentUser = useSelector(selectAuth).user;
-  console.log(currentUser);
   if (!currentUser) return;
   return (
     <div>

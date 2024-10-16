@@ -4,10 +4,8 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import axios, { AxiosError } from "axios";
 
-import logo from "./../assets/images/logo.png";
 import { API_LOGIN } from "../api/url";
-import { ErrorMessage, LoginSuccessMessage } from "../types/response.type";
-import { setAccessToken, setCurrentUser } from "../features/auth/authSlice";
+import { LoginSuccessMessage, ResponseError } from "../types/response.type";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -40,7 +38,7 @@ const Login = () => {
         if (err instanceof AxiosError) {
           const response = err.response;
           if (response) {
-            const { message } = response.data as ErrorMessage;
+            const { message } = response.data as ResponseError;
             if (Array.isArray(message)) setMessage(message);
             else {
               setMessage((arr) => [...arr, message]);

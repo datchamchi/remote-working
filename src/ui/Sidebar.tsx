@@ -61,10 +61,7 @@ const Sidebar = ({ currentUser }: { currentUser: User | null }) => {
   const listLink = currentUser ? listLinkLogin : listLinkNotLogin;
 
   const dispatch = useDispatch();
-  function handleLogout() {
-    localStorage.clear();
-    dispatch(logout());
-  }
+
   useEffect(() => {
     const currentTitle = listLink.find((link) => link.to.includes(currentPath));
     if (currentTitle) document.title = currentTitle.name + " - Remote Work";
@@ -90,13 +87,6 @@ const Sidebar = ({ currentUser }: { currentUser: User | null }) => {
             currentPath={currentPath}
           />
         ))}
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-4 rounded-md p-1 md:justify-start"
-        >
-          <HiOutlineArrowLeftStartOnRectangle />
-          <span className="hidden md:inline-block">Logout</span>
-        </button>
       </div>
     </div>
   );

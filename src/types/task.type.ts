@@ -1,9 +1,14 @@
+import { Project } from "./project.type";
+import { User } from "./user.type";
+
 export type Task = {
   id: string;
   taskName: string;
   createdAt: Date;
-  status: "todo" | "ongoing" | "done";
-  projectName: string;
+  key: string;
+  state: "todo" | "ongoing" | "done";
   estimate: Date;
   description: string;
+  project: Project;
+  user: User;
 };

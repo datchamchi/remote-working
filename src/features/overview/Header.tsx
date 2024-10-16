@@ -4,7 +4,7 @@ import { User } from "../../types/user.type";
 const HeaderOverview = ({ user }: { user: User }) => {
   return (
     <div>
-      <Header path={user.photo.path}>
+      <Header path={user.photo?.path}>
         <div>
           <p className="text-xl font-medium text-primary">
             Welcome, {user.firstName} {user.lastName}

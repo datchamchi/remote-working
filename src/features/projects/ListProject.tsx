@@ -8,59 +8,74 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { converDate } from "@/utils/utils";
+import { timeAgo } from "@/utils/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import ProjectSkeleton from "./ProjectSkeleton";
+import DialogAddProject from "./DialogAddProject";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function ListProject() {
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
   const page = "1";
-  const { data, isLoading, isSuccess } = useQuery({
+  const { data, isFetching, isSuccess, isError, refetch } = useQuery({
     queryKey: ["get_projects", page],
     queryFn: async () => {
       const res = await fetchAllProject(page);
       return res;
     },
   });
-  if (isLoading) return <ProjectSkeleton />;
+  function handleOpen() {
+    setOpenDialog(true);
+  }
+  function handleClose() {
+    setOpenDialog(false);
+  }
+  if (isFetching) return <ProjectSkeleton />;
   return (
-    <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-black">Name</TableHead>
-          <TableHead className="text-black">Key</TableHead>
-          <TableHead className="text-black">Leader</TableHead>
-          <TableHead className="text-black">Created At</TableHead>
-          <TableHead className="text-black">Progress</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {isSuccess &&
-          data.map((project) => (
-            <TableRow key={project.key}>
-              <TableCell
-                onClick={() =>
-                  navigate(
-                    `/your-projects/${project.projectName.split(/\s+/).join("-")}`,
-                  )
-                }
-                className="cursor-pointer font-medium text-primary hover:underline"
-              >
-                {project.projectName}
-              </TableCell>
-              <TableCell>{project.key}</TableCell>
-              <TableCell>{project.leader}</TableCell>
-              <TableCell className="">
-                {converDate(project.createdAt)}
-              </TableCell>
-              <TableCell className="font-semibold text-red-600">
-                80% Complete
-              </TableCell>
-            </TableRow>
-          ))}
-      </TableBody>
-    </Table>
+    <>
+      <DialogAddProject
+        refetch={refetch}
+        open={openDialog}
+        handleClose={handleClose}
+      >
+        <Button variant={"destructive"} onClick={handleOpen}>
+          Add new
+        </Button>
+      </DialogAddProject>
+      <Table>
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-black">Name</TableHead>
+            <TableHead className="text-black">Key</TableHead>
+            <TableHead className="text-black">Leader</TableHead>
+            <TableHead className="text-black">Created At</TableHead>
+            <TableHead className="text-black">Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isSuccess &&
+            data.map((project) => (
+              <TableRow key={project.key}>
+                <TableCell
+                  onClick={() => navigate(`/your-projects/${project.id}`)}
+                  className="cursor-pointer font-medium text-primary hover:underline"
+                >
+                  {project.projectName}
+                </TableCell>
+                <TableCell>{project.key}</TableCell>
+                <TableCell>{project.leader}</TableCell>
+                <TableCell className="">
+                  {timeAgo(new Date(project.createdAt))}
+                </TableCell>
+                <TableCell>{project.description}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </>
   );
 }

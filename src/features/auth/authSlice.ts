@@ -7,9 +7,10 @@ export interface AuthState {
     id: number;
     firstName: string;
     lastName: string;
+    email: string;
     photo: {
       path: string;
-    };
+    } | null;
   } | null;
 }
 
@@ -31,7 +32,8 @@ export const authSlice = createSlice({
           id: number;
           firstName: string;
           lastName: string;
-          photo: { path: string };
+          email: string;
+          photo: { path: string } | null;
         } | null;
       },
     ) => {
@@ -39,19 +41,13 @@ export const authSlice = createSlice({
         state.user = null;
         return;
       }
-      const {
-        id,
-        firstName,
-        lastName,
-        photo: { path },
-      } = action.payload;
+      const { id, firstName, lastName, photo, email } = action.payload;
       const user = {
         id,
         firstName,
         lastName,
-        photo: {
-          path,
-        },
+        email,
+        photo,
       };
       state.user = user;
     },

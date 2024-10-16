@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -13,23 +14,25 @@ import {
   HiOutlinePencilSquare,
   HiXMark,
 } from "react-icons/hi2";
+import defaultPhoto from "../../assets/images/default.jpg";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 const TaskRow = ({ task }: { task: Task }) => {
-  const [openChange, setOpenChange] = useState(true);
-  const [nameTask, setNameTask] = useState(task.taskName);
+  // const [openChange, setOpenChange] = useState(true);
+  // const [nameTask, setNameTask] = useState(task.taskName);
   return (
-    <div className="flex items-center font-medium hover:bg-slate-200">
-      <div className="min-w-20 text-sm">{task.id}</div>
-      <div className="relative flex-1">
+    <div className="flex items-center px-4 py-2 font-medium hover:bg-slate-200">
+      <div className="min-w-20 text-sm font-semibold">{task.key}</div>
+      {/* <div className="relative flex-1">
         <Input
           onBlur={() => {
             setNameTask(task.taskName);
-            setOpenChange(true);
+            // setOpenChange(true);
           }}
           onChange={(e) => setNameTask(e.target.value)}
           className="border-none font-semibold outline-none hover:underline focus:no-underline"
           value={nameTask}
-          disabled={openChange}
+          // disabled={openChange}
         />
         <HiOutlinePencilSquare
           onClick={() => setOpenChange(false)}
@@ -48,23 +51,36 @@ const TaskRow = ({ task }: { task: Task }) => {
             </div>
           </div>
         )}
+      </div> */}
+      <div className="flex-1 cursor-pointer hover:underline">
+        {task.taskName}
       </div>
-      <div className="min-w-8 justify-self-end">
-        <Select defaultValue={task.status}>
-          <SelectTrigger className="w-[150px] rounded-sm border-2 border-slate-200">
+      <div className="flex items-center gap-4">
+        <Avatar>
+          <AvatarImage
+            src={task.user.photo?.path || defaultPhoto}
+            alt="Avatar"
+          />
+        </Avatar>
+        <div></div>
+        <Select defaultValue={task.state}>
+          <SelectTrigger
+            className={`h-6 w-20 rounded-sm p-0 text-[12px] text-white ${task.state == "done" ? "bg-green-500" : "bg-primary"}`}
+          >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="text-sm">
-            <SelectItem value="todo">TO DO</SelectItem>
-            <SelectItem value="ongoing" className="text-primary">
-              ON GOING
-            </SelectItem>
-            <SelectItem
-              value="done"
-              className="text-red-700 hover:text-red-700"
-            >
-              DONE
-            </SelectItem>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="todo" className="text-[12px] font-semibold">
+                TO DO
+              </SelectItem>
+              <SelectItem value="ongoing" className="text-[12px] font-semibold">
+                ON GOING
+              </SelectItem>
+              <SelectItem value="done" className="text-[12px] font-semibold">
+                DONE
+              </SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>

@@ -15,7 +15,7 @@ import {
 import ErrorPage from "./pages/ErrorPage";
 import { useSelector } from "react-redux";
 import { selectAuth } from "./features/auth/authSlice";
-
+import { Toaster as Toaster2 } from "./components/ui/sonner";
 function App() {
   const queryClient = new QueryClient();
   const user = useSelector(selectAuth).user;
@@ -37,7 +37,10 @@ function App() {
 
             <Route path="/overview" element={<Overview />} />
             <Route path="/your-projects" element={<Projects />} />
-            <Route path="/your-projects/:name" element={<ProjectDetail />} />
+            <Route
+              path="/your-projects/:projectId"
+              element={<ProjectDetail />}
+            />
             <Route path="/your-tasks" element={<Tasks />} />
             <Route path="/your-teams" element={<Teams />} />
             <Route path="/login" element={<Login />} />
@@ -46,6 +49,7 @@ function App() {
           </Route>
         </Routes>
         <Toaster position="top-center" reverseOrder={false} gutter={8} />
+        <Toaster2 />
       </BrowserRouter>
     </QueryClientProvider>
   );

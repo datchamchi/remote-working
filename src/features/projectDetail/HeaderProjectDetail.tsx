@@ -6,6 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+
 import { User } from "@/types/user.type";
 import Header from "@/ui/Header";
 
@@ -19,7 +20,7 @@ const HeaderProjectDetail = ({
   if (!name) return;
   return (
     <div>
-      <Header path={user.photo.path}>
+      <Header path={user.photo?.path}>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>

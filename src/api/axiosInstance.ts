@@ -19,7 +19,7 @@ axiosInstance.interceptors.response.use(
   },
   async function (error: AxiosError) {
     try {
-      if (error.response?.status == 403) {
+      if (error.response?.status === 403) {
         const response = await axios.get(
           `${import.meta.env.VITE_URL_BACKEND}/api/auth/refresh`,
           {
@@ -35,9 +35,10 @@ axiosInstance.interceptors.response.use(
           config.headers.Authorization = `Bearer ${accessToken}`;
           return axiosInstance.request(config);
         }
-        return error;
+        return Promise.reject(error);
       }
     } catch {
+      console.log("Error when get new access Token");
       store.dispatch(setAccessToken(null));
       store.dispatch(setCurrentUser(null));
     }

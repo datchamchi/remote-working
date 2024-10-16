@@ -2,16 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import {
   Popover,
   PopoverContent,
@@ -30,143 +28,243 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { Project } from "@/types/project.type";
+import { useMutation } from "@tanstack/react-query";
+import { addTask } from "@/api/task-api";
+import { useForm } from "react-hook-form";
+import { TaskSchema } from "@/dto/TaskDto";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import Spinner from "@/ui/Spinner";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../auth/authSlice";
 
-const listUser = [{ name: "T_Dat", value: "T_Dat" }];
-const DialogAddTask = ({ children }: { children: ReactNode }) => {
-  const [nameTask, setNameTask] = useState("");
-  const [description, setDescription] = useState("");
-  const [openCalendar, setOpenCalendar] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+const DialogAddTask = ({
+  children,
+  project,
+  refetch,
+  openDialog,
+  closeDialog,
+}: {
+  children: ReactNode;
+  project: Project;
+  refetch: () => void;
+  openDialog: boolean;
+  closeDialog: () => void;
+}) => {
+  const currentUser = useSelector(selectAuth).user;
+  const [openChooseUser, setOpenChooseUser] = useState(false);
+  const checkIsLeader = currentUser
+    ? currentUser.email === project.leader
+    : false;
+  const [username, setUsername] = useState(
+    currentUser?.firstName + " " + currentUser?.lastName,
+  );
+  const { mutate, isPending } = useMutation({
+    mutationFn: addTask,
+    onSuccess: () => {
+      closeDialog();
+      refetch();
+    },
+  });
+
+  const form = useForm<z.infer<typeof TaskSchema>>({
+    resolver: zodResolver(TaskSchema),
+    defaultValues: {
+      taskName: "",
+      description: "",
+      assign: currentUser ? currentUser.id : 0,
+      estimate: new Date(),
+    },
+  });
+  function handleReset() {
+    form.reset();
+  }
+  function handleSubmit(values: z.infer<typeof TaskSchema>) {
+    const { assign, description, estimate, taskName } = values;
+    mutate({
+      taskName,
+      description,
+      estimate,
+      assign,
+      projectId: String(project.id),
+    });
+  }
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={openDialog} onOpenChange={handleReset}>
         <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]" closeDialog={closeDialog}>
           <DialogHeader>
             <DialogTitle className="tracking-widest">Add New Task</DialogTitle>
             <div className="flex items-center gap-2 font-semibold">
-              <DialogDescription>Hello World</DialogDescription>
+              <DialogDescription>{project.projectName}</DialogDescription>
             </div>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-start">Task Name</Label>
-              <Input
-                value={nameTask}
-                className="col-span-3"
-                onChange={(e) => setNameTask(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-start">Description</Label>
-              <Input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
+              <FormField
+                control={form.control}
+                name="taskName"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="col-span-1 font-semibold">
+                      Task Name
+                    </FormLabel>
+                    <FormControl className="col-span-3">
+                      <Input {...field} />
+                    </FormControl>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="username" className="text-start">
-                Due Date
-              </Label>
-              <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
-                <PopoverTrigger asChild>
-                  <Button
-                    onClick={() => setOpenCalendar(true)}
-                    variant={"outline"}
-                    className={cn(
-                      "w-[280px] justify-start text-left font-normal",
-                      !dueDate && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? (
-                      format(dueDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={dueDate}
-                    onSelect={(value) => {
-                      setDueDate(value);
-                      setOpenCalendar(false);
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-start">Asign to</Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[280px] justify-between"
-                  >
-                    {/* {value
-                      ? frameworks.find(
-                          (framework) => framework.value === value,
-                        )?.label
-                      : "Select framework..."} */}
-                    Select User
-                    <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search User..."
-                      className="h-9 w-full"
-                    />
-                    <CommandList>
-                      <CommandEmpty>No framework found.</CommandEmpty>
-                      <CommandGroup>
-                        {listUser.map((user) => (
-                          <CommandItem
-                            key={user.value}
-                            value={user.value}
-                            onSelect={(currentValue) => {
-                              setValue(
-                                currentValue === value ? "" : currentValue,
-                              );
-                              setOpen(false);
-                            }}
+                    <FormMessage className="col-start-1 col-end-5" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="col-span-1 font-semibold">
+                      Description
+                    </FormLabel>
+                    <FormControl className="col-span-3">
+                      <Input {...field} />
+                    </FormControl>
+
+                    <FormMessage className="col-start-1 col-end-5" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="estimate"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="col-span-1 font-semibold">
+                      Due Date
+                    </FormLabel>
+                    <FormControl className="col-span-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[280px] justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}
                           >
-                            {user.name}
-                            <CheckIcon
-                              className={cn(
-                                "ml-auto h-4 w-4",
-                                value === user.value
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {format(field.value, "PPP")}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={(value) => {
+                              if (!value) return;
+                              field.onChange(value);
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+
+                    <FormMessage className="col-start-1 col-end-5" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="assign"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-4 items-center gap-4">
+                    <FormLabel className="col-span-1 font-semibold">
+                      Assign to
+                    </FormLabel>
+                    <FormControl className="col-span-3">
+                      <Popover
+                        open={openChooseUser}
+                        onOpenChange={setOpenChooseUser}
+                      >
+                        <PopoverTrigger asChild disabled={!checkIsLeader}>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="w-[280px] justify-between"
+                          >
+                            {username}
+                            <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[280px] p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search User..."
+                              className="h-9 w-full"
                             />
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose>
-              <Button>Cancel</Button>
-            </DialogClose>
-            <Button variant={"destructive"}>Save</Button>
-          </DialogFooter>
+                            <CommandList>
+                              <CommandEmpty>No User Found</CommandEmpty>
+                              <CommandGroup>
+                                {project.users.map((user) => (
+                                  <CommandItem
+                                    key={user.id}
+                                    value={"" + user.id}
+                                    onSelect={(currentValue) => {
+                                      field.onChange(Number(currentValue));
+                                      setUsername(
+                                        user.firstName + " " + user.lastName,
+                                      );
+                                      setOpenChooseUser(false);
+                                    }}
+                                  >
+                                    {user.firstName + " " + user.lastName}
+                                    <CheckIcon
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        field.value === user.id
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+
+                    <FormMessage className="col-start-1 col-end-5" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-4">
+                <Button onClick={closeDialog}>Cancel</Button>
+                <Button type="submit" className="bg-primary hover:bg-blue-600">
+                  {isPending ? <Spinner h={5} w={5} /> : "Save"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

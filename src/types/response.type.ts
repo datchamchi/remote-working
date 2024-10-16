@@ -1,5 +1,3 @@
-import { Project } from "./project.type";
-
 export type LoginSuccessMessage = {
   status: string;
   accessToken: string;
@@ -12,11 +10,12 @@ export type LoginSuccessMessage = {
     };
   };
 };
-export type ErrorMessage = {
+
+export type ResponseError = {
   status: string;
-  message: string;
+  message: string[] | string;
 };
-export type GetAllProjectSuccess = {
+export type ResponseSuccess = {
   status: string;
-  data: Project[];
+  data: any;
 };

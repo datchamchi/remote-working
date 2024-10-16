@@ -4,7 +4,7 @@ import Header from "../../ui/Header";
 const HeaderTask = ({ user }: { user: User }) => {
   return (
     <div>
-      <Header path={user.photo.path}>
+      <Header path={user.photo?.path}>
         <div>
           <p className="text-xl font-medium">Explore Task</p>
         </div>
