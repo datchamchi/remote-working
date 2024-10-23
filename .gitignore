@@ -2,8 +2,7 @@
 /dist
 
 
-.env.*
-
 # dotenv environment variable files
+.env.*
 .env
 .env.development.local
