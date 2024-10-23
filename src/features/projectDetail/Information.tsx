@@ -21,7 +21,10 @@ import { User } from "@/types/user.type";
 import { Button } from "@/components/ui/button";
 import { HiOutlinePaperAirplane } from "react-icons/hi2";
 import { useState } from "react";
-import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { emitSocket } from "@/app/socketSlice";
+import { SocketEvent } from "@/constant";
+import { AppDispatch } from "@/app/store";
 
 const Information = ({
   project,
@@ -30,17 +33,32 @@ const Information = ({
   project: Project;
   currentUser: User;
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [openInputInvite, setOpenInputInvite] = useState(false);
   const [emailInvite, setEmailInvite] = useState("");
   const listMember = project.users.filter(
     (user) => user.email !== currentUser.email,
   );
 
+  function handleSendInvite() {
+    dispatch(
+      emitSocket({
+        event: SocketEvent.INVITE_OTHER,
+        data: {
+          type: "invite",
+          content: `${currentUser.name} invite you join project ${project.projectName}`,
+          from: currentUser.email,
+          to: emailInvite,
+          project: project.key,
+        },
+      }),
+    );
+  }
   return (
     <div className="border-2 border-slate-600 px-4 py-4">
       <Accordion type="multiple" defaultValue={["member", "created", "more"]}>
         <AccordionItem value="member">
-          <AccordionTrigger>Your Team</AccordionTrigger>
+          <AccordionTrigger>Others</AccordionTrigger>
           <AccordionContent>
             <div className="flex items-center -space-x-4">
               {listMember.map((user, index) => (
@@ -51,13 +69,11 @@ const Information = ({
                         <AvatarImage
                           className={`z-${(index + 1) * 10}`}
                           src={user.photo?.path ?? photo}
-                          alt={user.firstName + user.lastName}
+                          alt={user.name}
                         />
                       </Avatar>
                     </TooltipTrigger>
-                    <TooltipContent>
-                      {user.firstName} {user.lastName}
-                    </TooltipContent>
+                    <TooltipContent>{user.name}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ))}
@@ -65,10 +81,8 @@ const Information = ({
             <div className="mb-4 mt-4">
               {/* {listMember.length === 0 && "No member"} */}
               {listMember.length <= 2
-                ? listMember
-                    .map((user) => `${user.firstName} ${user.lastName}`)
-                    .join(" and ")
-                : `${listMember[0].firstName} ${listMember[0].lastName} and ${listMember.length - 1} others people`}
+                ? listMember.map((user) => `${user.name}`).join(" and ")
+                : `${listMember[0].name} and ${listMember.length - 1} others people`}
             </div>
             {project.leader === currentUser.email && (
               <div className="space-y-4">
@@ -81,19 +95,11 @@ const Information = ({
                       placeholder="Enter email"
                       value={emailInvite}
                       onChange={(e) => setEmailInvite(e.target.value)}
-                      // onBlur={() => {
-                      //   setOpenInputInvite(false);
-                      //   setEmailInvite("");
-                      // }}
                     />
                     {emailInvite && (
                       <HiOutlinePaperAirplane
                         className="absolute bottom-1/3 right-4 cursor-pointer"
-                        onClick={() =>
-                          toast("Invitation is sent", {
-                            description: `Waiting ${emailInvite} accept`,
-                          })
-                        }
+                        onClick={handleSendInvite}
                       />
                     )}
                   </div>

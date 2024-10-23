@@ -3,7 +3,6 @@ import Login from "./Login";
 import Overview from "./Overview";
 import PageNotFound from "./PageNotFound";
 import Projects from "./Projects";
-import RequireAuth from "./RequireAuth";
 import SignUp from "./SignUp";
 import Tasks from "./Tasks";
 import Teams from "./Teams";
@@ -13,7 +12,6 @@ export {
   Overview,
   PageNotFound,
   Projects,
-  RequireAuth,
   SignUp,
   Login,
   Tasks,

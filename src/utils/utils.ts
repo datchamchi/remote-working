@@ -6,6 +6,7 @@ export function converDate(isoDate: string) {
 
 export function timeAgo(date: Date) {
   const now = new Date();
+
   const seconds = Math.floor((Number(now) - Number(date)) / 1000);
 
   const intervals = [
@@ -24,5 +25,5 @@ export function timeAgo(date: Date) {
     }
   }
 
-  return "Just now"; // Nếu thời gian quá ngắn
+  return "Just now";
 }

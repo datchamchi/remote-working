@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
 import axios, { AxiosError } from "axios";
 
 import { API_LOGIN } from "../api/url";
@@ -11,7 +10,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string[]>([]);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   function handleSubmit() {
@@ -32,7 +30,9 @@ const Login = () => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("user", JSON.stringify(user));
 
-        navigate("/overview");
+        setTimeout(() => {
+          navigate("/overview");
+        }, 2000);
       })
       .catch((err: unknown) => {
         if (err instanceof AxiosError) {
@@ -45,6 +45,16 @@ const Login = () => {
             }
           }
         }
+      });
+  }
+  function handleLoginWithGoogle() {
+    axios
+      .get(`${import.meta.env.VITE_URL_BACKEND}/api/auth/google`)
+      .then(() => {
+        console.log("Login with Google");
+      })
+      .catch(() => {
+        console.log("Error with login gg");
       });
   }
   return (
@@ -119,16 +129,38 @@ const Login = () => {
           </div>
         </div>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
+        <p className="mt-10 space-x-4 text-center text-sm text-gray-500">
+          <span>Not a member?</span>
           <Link
-            to="/"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            to="/signup"
+            className="font-semibold leading-6 text-indigo-600 hover:underline"
           >
-            Start a 14 day free trial
+            Sign up now
           </Link>
         </p>
       </div>
+
+      <form
+        action={`${import.meta.env.VITE_URL_BACKEND}/api/auth/google`}
+        method="GET"
+        className="mt-10 flex justify-center"
+      >
+        <div className="flex flex-col items-center gap-4 font-semibold text-slate-600">
+          <span>Or</span>
+          <button
+            type="submit"
+            className="flex gap-2 rounded-lg border border-slate-200 px-4 py-2 text-slate-700 transition duration-150 hover:border-slate-400 hover:text-slate-900 hover:shadow dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-slate-300"
+          >
+            <img
+              className="h-6 w-6"
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              loading="lazy"
+              alt="google logo"
+            />
+            <span>Continue with Google</span>
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

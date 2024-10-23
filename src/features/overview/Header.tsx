@@ -7,7 +7,7 @@ const HeaderOverview = ({ user }: { user: User }) => {
       <Header path={user.photo?.path}>
         <div>
           <p className="text-xl font-medium text-primary">
-            Welcome, {user.firstName} {user.lastName}
+            Welcome, {user.name}
           </p>
           <p className="text-sm tracking-widest">
             Let's finish your task today!

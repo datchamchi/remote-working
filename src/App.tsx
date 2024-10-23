@@ -13,12 +13,25 @@ import {
   Teams,
 } from "./pages";
 import ErrorPage from "./pages/ErrorPage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectAuth } from "./features/auth/authSlice";
 import { Toaster as Toaster2 } from "./components/ui/sonner";
+import { useEffect } from "react";
+import { receiveSocket } from "./app/socketSlice";
+import { SocketEvent } from "./constant";
+import { AppDispatch } from "./app/store";
+
 function App() {
   const queryClient = new QueryClient();
   const user = useSelector(selectAuth).user;
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(receiveSocket({ event: SocketEvent.USER_NOT_FOUND }));
+    dispatch(receiveSocket({ event: SocketEvent.NOTIFY_USER }));
+    dispatch(receiveSocket({ event: SocketEvent.ERROR }));
+    dispatch(receiveSocket({ event: SocketEvent.ACCPEPT_INVITE }));
+    dispatch(receiveSocket({ event: SocketEvent.REFUSE_INVITE }));
+  }, [dispatch]);
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

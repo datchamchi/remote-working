@@ -5,8 +5,7 @@ export interface AuthState {
   accessToken: string | null;
   user: {
     id: number;
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     photo: {
       path: string;
@@ -30,8 +29,7 @@ export const authSlice = createSlice({
       action: {
         payload: {
           id: number;
-          firstName: string;
-          lastName: string;
+          name: string;
           email: string;
           photo: { path: string } | null;
         } | null;
@@ -41,17 +39,17 @@ export const authSlice = createSlice({
         state.user = null;
         return;
       }
-      const { id, firstName, lastName, photo, email } = action.payload;
+      const { id, name, photo, email } = action.payload;
       const user = {
         id,
-        firstName,
-        lastName,
+        name,
         email,
         photo,
       };
       state.user = user;
     },
     logout: (state) => {
+      localStorage.clear();
       state.accessToken = null;
       state.user = null;
     },

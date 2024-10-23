@@ -65,9 +65,7 @@ const DialogAddTask = ({
   const checkIsLeader = currentUser
     ? currentUser.email === project.leader
     : false;
-  const [username, setUsername] = useState(
-    currentUser?.firstName + " " + currentUser?.lastName,
-  );
+  const [username, setUsername] = useState(currentUser?.name);
   const { mutate, isPending } = useMutation({
     mutationFn: addTask,
     onSuccess: () => {
@@ -228,13 +226,11 @@ const DialogAddTask = ({
                                     value={"" + user.id}
                                     onSelect={(currentValue) => {
                                       field.onChange(Number(currentValue));
-                                      setUsername(
-                                        user.firstName + " " + user.lastName,
-                                      );
+                                      setUsername(user.name);
                                       setOpenChooseUser(false);
                                     }}
                                   >
-                                    {user.firstName + " " + user.lastName}
+                                    {user.name}
                                     <CheckIcon
                                       className={cn(
                                         "ml-auto h-4 w-4",
