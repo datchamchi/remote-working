@@ -34,7 +34,9 @@ const HeaderProjectDetail = ({
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-lg">{name}</BreadcrumbPage>
+              <BreadcrumbPage className="text-lg font-semibold text-primary">
+                {name}
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

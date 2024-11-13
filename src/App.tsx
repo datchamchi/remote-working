@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppLayout from "./ui/AppLayout";
 import {
   Login,
-  Overview,
   PageNotFound,
   ProjectDetail,
   Projects,
@@ -41,14 +40,13 @@ function App() {
               path="/"
               element={
                 user !== null ? (
-                  <Navigate to={"/overview"} />
+                  <Navigate to={"/your-tasks?page=1&time=deadline&type=all"} />
                 ) : (
                   <Navigate to={"/login"} />
                 )
               }
             />
 
-            <Route path="/overview" element={<Overview />} />
             <Route path="/your-projects" element={<Projects />} />
             <Route
               path="/your-projects/:projectId"

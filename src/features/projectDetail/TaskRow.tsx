@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -8,50 +7,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Task } from "@/types/task.type";
-import { useState } from "react";
-import {
-  HiOutlineCheck,
-  HiOutlinePencilSquare,
-  HiXMark,
-} from "react-icons/hi2";
+
 import defaultPhoto from "../../assets/images/default.jpg";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 const TaskRow = ({ task }: { task: Task }) => {
-  // const [openChange, setOpenChange] = useState(true);
-  // const [nameTask, setNameTask] = useState(task.taskName);
   return (
     <div className="flex items-center px-4 py-2 font-medium hover:bg-slate-200">
       <div className="min-w-20 text-sm font-semibold">{task.key}</div>
-      {/* <div className="relative flex-1">
-        <Input
-          onBlur={() => {
-            setNameTask(task.taskName);
-            // setOpenChange(true);
-          }}
-          onChange={(e) => setNameTask(e.target.value)}
-          className="border-none font-semibold outline-none hover:underline focus:no-underline"
-          value={nameTask}
-          // disabled={openChange}
-        />
-        <HiOutlinePencilSquare
-          onClick={() => setOpenChange(false)}
-          className="absolute bottom-2 right-4 cursor-pointer"
-        />
-        {!openChange && (
-          <div className="absolute right-10 flex cursor-pointer gap-2">
-            <div className="bg-slate-300 px-2 py-1">
-              <HiOutlineCheck />
-            </div>
-            <div
-              className="bg-slate-300 px-2 py-1"
-              onClick={() => setOpenChange(true)}
-            >
-              <HiXMark />
-            </div>
-          </div>
-        )}
-      </div> */}
+
       <div className="flex-1 cursor-pointer hover:underline">
         {task.taskName}
       </div>
@@ -79,6 +43,9 @@ const TaskRow = ({ task }: { task: Task }) => {
               </SelectItem>
               <SelectItem value="done" className="text-[12px] font-semibold">
                 DONE
+              </SelectItem>
+              <SelectItem value="overdue" className="text-[12px] font-semibold">
+                OVERDUE
               </SelectItem>
             </SelectGroup>
           </SelectContent>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ReactNode, useState } from "react";
-import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+
 import {
   Command,
   CommandEmpty,
@@ -27,7 +26,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { CalendarIcon, CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { Project } from "@/types/project.type";
 import { useMutation } from "@tanstack/react-query";
 import { addTask } from "@/api/task-api";
@@ -46,7 +45,9 @@ import {
 import Spinner from "@/ui/Spinner";
 import { useSelector } from "react-redux";
 import { selectAuth } from "../auth/authSlice";
-
+import { format, parse } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { formatDate } from "@/utils/utils";
 const DialogAddTask = ({
   children,
   project,
@@ -80,18 +81,21 @@ const DialogAddTask = ({
       taskName: "",
       description: "",
       assign: currentUser ? currentUser.id : 0,
-      estimate: new Date(),
+      day: "",
+      time: "",
     },
   });
+
   function handleReset() {
     form.reset();
   }
   function handleSubmit(values: z.infer<typeof TaskSchema>) {
-    const { assign, description, estimate, taskName } = values;
+    const { assign, description, day, time, taskName } = values;
+
     mutate({
       taskName,
       description,
-      estimate,
+      estimate: formatDate(day, time),
       assign,
       projectId: String(project.id),
     });
@@ -101,7 +105,7 @@ const DialogAddTask = ({
     <div>
       <Dialog open={openDialog} onOpenChange={handleReset}>
         <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]" closeDialog={closeDialog}>
+        <DialogContent className="sm:max-w-[420px]" closeDialog={closeDialog}>
           <DialogHeader>
             <DialogTitle className="tracking-widest">Add New Task</DialogTitle>
             <div className="flex items-center gap-2 font-semibold">
@@ -146,46 +150,70 @@ const DialogAddTask = ({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="estimate"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
-                    <FormLabel className="col-span-1 font-semibold">
-                      Due Date
-                    </FormLabel>
-                    <FormControl className="col-span-3">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[280px] justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(field.value, "PPP")}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(value) => {
-                              if (!value) return;
-                              field.onChange(value);
+              <div className="grid grid-cols-4 items-center gap-4">
+                <FormLabel className="col-span-1">Due Date</FormLabel>
+                <div className="col-span-3 flex gap-2">
+                  <FormField
+                    control={form.control}
+                    name="time"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormControl>
+                          <Input
+                            type="time"
+                            className="w-full cursor-pointer"
+                            defaultValue={field.value}
+                            onChange={(value) => {
+                              field.onChange(value.target.value);
                             }}
-                            initialFocus
                           />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormMessage className="col-start-1 col-end-5" />
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="day"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormControl>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "justify-start text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+
+                                {field.value || "dd-MM-yyyy"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={parse(
+                                  field.value,
+                                  "dd-MM-yyyy",
+                                  new Date(),
+                                )}
+                                onSelect={(value) => {
+                                  if (!value) return;
+                                  field.onChange(format(value, "dd-MM-yyy"));
+                                }}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
               <FormField
                 control={form.control}
@@ -204,7 +232,7 @@ const DialogAddTask = ({
                           <Button
                             variant="outline"
                             role="combobox"
-                            aria-expanded={open}
+                            aria-expanded={"false"}
                             className="w-[280px] justify-between"
                           >
                             {username}

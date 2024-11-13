@@ -29,9 +29,8 @@ const Login = () => {
 
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("user", JSON.stringify(user));
-
         setTimeout(() => {
-          navigate("/overview");
+          navigate("/your-tasks");
         }, 2000);
       })
       .catch((err: unknown) => {
@@ -45,16 +44,6 @@ const Login = () => {
             }
           }
         }
-      });
-  }
-  function handleLoginWithGoogle() {
-    axios
-      .get(`${import.meta.env.VITE_URL_BACKEND}/api/auth/google`)
-      .then(() => {
-        console.log("Login with Google");
-      })
-      .catch(() => {
-        console.log("Error with login gg");
       });
   }
   return (

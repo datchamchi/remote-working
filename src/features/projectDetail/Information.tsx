@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input";
 import { Project } from "@/types/project.type";
-import { converDate } from "@/utils/utils";
 import { CalendarIcon } from "@radix-ui/react-icons";
 
 import {
@@ -25,13 +24,18 @@ import { useDispatch } from "react-redux";
 import { emitSocket } from "@/app/socketSlice";
 import { SocketEvent } from "@/constant";
 import { AppDispatch } from "@/app/store";
+import { format } from "date-fns";
+import ProjectAnalys from "./ProjectAnalys";
+import { Task } from "@/types/task.type";
 
 const Information = ({
   project,
   currentUser,
+  listTask,
 }: {
   project: Project;
   currentUser: User;
+  listTask: Task[];
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [openInputInvite, setOpenInputInvite] = useState(false);
@@ -56,7 +60,13 @@ const Information = ({
   }
   return (
     <div className="border-2 border-slate-600 px-4 py-4">
-      <Accordion type="multiple" defaultValue={["member", "created", "more"]}>
+      <Accordion type="multiple" defaultValue={["overview", "member", "more"]}>
+        <div className="py-4">
+          <ProjectAnalys listTask={listTask}>
+            <Button className="bg-red-500 hover:bg-red-600">View Analys</Button>
+          </ProjectAnalys>
+        </div>
+
         <AccordionItem value="member">
           <AccordionTrigger>Others</AccordionTrigger>
           <AccordionContent>
@@ -124,7 +134,7 @@ const Information = ({
             <div className="relative text-slate-900">
               <Input
                 disabled={true}
-                value={converDate(project.createdAt)}
+                value={format(project.createdAt, "hh:mm dd/MM/yyyy")}
                 className="border-none px-6 font-semibold outline-none"
               />
               <CalendarIcon className="absolute bottom-2 left-0 mr-2 h-4 w-4" />

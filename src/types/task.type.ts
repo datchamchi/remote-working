@@ -4,9 +4,9 @@ import { User } from "./user.type";
 export type Task = {
   id: string;
   taskName: string;
-  createdAt: Date;
+  createdAt: string;
   key: string;
-  state: "todo" | "ongoing" | "done";
+  state: "todo" | "ongoing" | "done" | "overdue";
   estimate: Date;
   description: string;
   project: Project;

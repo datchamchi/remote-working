@@ -9,26 +9,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import photo from "./../assets/images/default.jpg";
-import React, { useState } from "react";
-import { HiOutlineArrowLeftStartOnRectangle } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
-import { logout } from "@/features/auth/authSlice";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { HiOutlineArrowLeftStartOnRectangle } from "react-icons/hi2";
 
 import Notify from "@/features/notify/Notify";
-import { useNavigate } from "react-router-dom";
+import photo from "./../assets/images/default.jpg";
+import { logout } from "@/features/auth/authSlice";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { disconnectFromSocket } from "@/app/socketSlice";
+import { AppDispatch } from "@/app/store";
 
 const Header = ({
   children,
@@ -37,12 +36,13 @@ const Header = ({
   children: React.ReactElement;
   path: string | undefined;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   function handleLogout() {
     localStorage.clear();
     dispatch(logout());
+    dispatch(disconnectFromSocket());
     setTimeout(() => {
       navigate("/login");
     });

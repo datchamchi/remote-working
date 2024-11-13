@@ -6,7 +6,7 @@ const HeaderProject = ({ user }: { user: User }) => {
     <div>
       <Header path={user.photo?.path}>
         <div>
-          <p className="text-xl font-medium">Projects</p>
+          <p className="text-xl font-medium text-primary">Projects</p>
         </div>
       </Header>
     </div>

@@ -1,12 +1,10 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  HiOutlineArrowLeftStartOnRectangle,
   HiOutlineArrowRightStartOnRectangle,
   HiOutlineBookOpen,
   HiOutlineChatBubbleLeftEllipsis,
   HiOutlineCog6Tooth,
-  HiOutlineSquares2X2,
   HiOutlineUserGroup,
   HiOutlineUserPlus,
 } from "react-icons/hi2";
@@ -14,18 +12,11 @@ import {
 import logo from "./../assets/images/logo.png";
 import NavLink from "./NavLink";
 import { User } from "../types/user.type";
-import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { logout } from "@/features/auth/authSlice";
+
 const listLinkLogin = [
   {
-    name: "Overview",
-    to: "/overview",
-    icon: <HiOutlineSquares2X2 />,
-  },
-  {
     name: "Tasks",
-    to: "/your-tasks",
+    to: "/your-tasks?page=1&time=deadline&type=all",
     icon: <HiOutlineBookOpen />,
   },
   {
@@ -59,8 +50,6 @@ const listLinkNotLogin = [
 const Sidebar = ({ currentUser }: { currentUser: User | null }) => {
   const { pathname: currentPath } = useLocation();
   const listLink = currentUser ? listLinkLogin : listLinkNotLogin;
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const currentTitle = listLink.find((link) => link.to.includes(currentPath));

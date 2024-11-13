@@ -8,7 +8,7 @@ import { HiOutlineUserGroup } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuth } from "../auth/authSlice";
 import { useMutation } from "@tanstack/react-query";
-import { updateNotify } from "@/api/noti-api";
+import { updateInviteNotify } from "@/api/noti-api";
 
 const NotiRow = ({ noti, refetch }: { noti: Notify; refetch: () => void }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -46,7 +46,7 @@ const NotiRow = ({ noti, refetch }: { noti: Notify; refetch: () => void }) => {
   }
 
   const { mutate } = useMutation({
-    mutationFn: updateNotify,
+    mutationFn: updateInviteNotify,
     onSuccess: () => {
       refetch();
     },

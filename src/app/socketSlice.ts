@@ -26,7 +26,8 @@ export const connectToSocket = createAsyncThunk(
 export const disconnectFromSocket = createAsyncThunk(
   "disconnectFromSocket",
   async function () {
-    return await socketClient.disconnect();
+    console.log("Disconnect socket: " + socketClient.getId());
+    await socketClient.disconnect();
   },
 );
 

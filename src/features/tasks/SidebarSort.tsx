@@ -6,69 +6,71 @@ import {
 } from "@/components/ui/accordion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { HiClock, HiOutlineUserCircle } from "react-icons/hi2";
+import { HiClock } from "react-icons/hi2";
 import { GiProgression } from "react-icons/gi";
+import { useSearchParams } from "react-router-dom";
 
-type SidebarSortProps = {
-  listFilter: string[];
-  setListFilter: React.Dispatch<React.SetStateAction<string[]>>;
-};
-const SidebarSort = ({ listFilter, setListFilter }: SidebarSortProps) => {
-  const listSort = [
-    {
-      name: "Time",
-      icon: <HiClock />,
-      types: [
-        { name: "Deadline", id: "deadline" },
-        {
-          name: "Create Recently",
-          id: "recently",
-        },
-      ],
-    },
-    {
-      name: "Status",
-      icon: <GiProgression />,
-      types: [
-        { name: "To do", id: "todo" },
-        { name: "On-going", id: "ongoing" },
-        { name: "Done", id: "done" },
-        { name: "All", id: "all" },
-      ],
-    },
-    {
-      name: "Type",
-      icon: <HiOutlineUserCircle />,
-      types: [
-        {
-          name: "Asssign to me",
-          id: "myself",
-        },
-        // { name: "In project", id: "myproject" },
-      ],
-    },
-  ];
+const listSort = [
+  {
+    name: "Time",
+    icon: <HiClock />,
+    types: [
+      { name: "Deadline", id: "deadline" },
+      {
+        name: "Create Recently",
+        id: "recently",
+      },
+    ],
+  },
+  {
+    name: "Status",
+    icon: <GiProgression />,
+    types: [
+      { name: "All", id: "all" },
+      { name: "To do", id: "todo" },
+      { name: "On-going", id: "ongoing" },
+      { name: "Done", id: "done" },
+      { name: "Overdue", id: "overdue" },
+    ],
+  },
+];
+const SidebarSort = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   return (
-    <Accordion type="multiple" className="col-span-1 px-4 shadow-lg">
-      {listSort.map((sort, index) => (
+    <Accordion
+      type="multiple"
+      className="col-span-1 px-4 shadow-lg"
+      defaultValue={["Time", "Status", "Type"]}
+    >
+      {listSort.map((sort) => (
         <AccordionItem value={sort.name} key={sort.name}>
           <AccordionTrigger className="text-md gap-2 font-semibold hover:no-underline focus:no-underline">
-            {/* {sort.icon} */}
             <span>{sort.name}</span>
           </AccordionTrigger>
           <AccordionContent>
             <RadioGroup
-              defaultValue={listFilter[index]}
-              onValueChange={(value) =>
-                setListFilter((curList) => {
-                  const newList = [...curList];
-                  newList[index] = value;
-                  return newList;
-                })
+              defaultValue={
+                sort.name == "Time"
+                  ? (searchParams.get("time") ?? "")
+                  : (searchParams.get("type") ?? "")
               }
             >
               {sort.types.map((type) => (
-                <div key={type.id} className="mt-4 flex items-center gap-4">
+                <div
+                  key={type.id}
+                  className="mt-4 flex items-center gap-4"
+                  onClick={() =>
+                    sort.name == "Time"
+                      ? setSearchParams({
+                          ...Object.fromEntries(searchParams),
+                          time: type.id,
+                        })
+                      : setSearchParams({
+                          ...Object.fromEntries(searchParams),
+                          type: type.id,
+                        })
+                  }
+                >
                   <RadioGroupItem value={type.id} id={type.id} />
                   <Label htmlFor={type.id}>{type.name}</Label>
                 </div>

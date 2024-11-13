@@ -6,7 +6,7 @@ const HeaderTask = ({ user }: { user: User }) => {
     <div>
       <Header path={user.photo?.path}>
         <div>
-          <p className="text-xl font-medium">Explore Task</p>
+          <p className="text-xl font-medium text-primary">Explore Task</p>
         </div>
       </Header>
     </div>

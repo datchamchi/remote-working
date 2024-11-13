@@ -1,8 +1,4 @@
-export function converDate(isoDate: string) {
-  const dateObj = new Date(isoDate);
-  const formattedTime: string = `${String(dateObj.getHours()).padStart(2, "0")}:${String(dateObj.getMinutes()).padStart(2, "0")} - ${String(dateObj.getDate()).padStart(2, "0")}/${String(dateObj.getMonth() + 1).padStart(2, "0")}/${dateObj.getFullYear()}`;
-  return formattedTime;
-}
+import { parse } from "date-fns";
 
 export function timeAgo(date: Date) {
   const now = new Date();
@@ -26,4 +22,8 @@ export function timeAgo(date: Date) {
   }
 
   return "Just now";
+}
+
+export function formatDate(day: string, time: string) {
+  return parse(time + " " + day, "HH:mm dd-MM-yyyy", new Date());
 }

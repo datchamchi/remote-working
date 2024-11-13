@@ -80,7 +80,11 @@ const ProjectDetail = () => {
               <ListTask project={data} listTask={listTask} refetch={refetch} />
             </div>
             <div className="col-span-2">
-              <Information project={data} currentUser={currentUser} />
+              <Information
+                project={data}
+                listTask={listTask}
+                currentUser={currentUser}
+              />
             </div>
           </div>
         </>

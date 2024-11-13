@@ -1,16 +1,39 @@
+import { formatDate } from "@/utils/utils";
 import { string, z } from "zod";
 
-export const TaskSchema = z.object({
-  taskName: z.string().min(1, "Missing field: task name"),
-  description: string().min(1, "Missing field: task description"),
-  estimate: z
-    .date({ required_error: "Missing field: due date" })
-    .refine((value) => value > new Date(), {
-      message: "Date in invalid",
-    }),
-  assign: z.number({ required_error: "Missing field : user id" }),
-});
+export const TaskSchema = z
+  .object({
+    taskName: z.string().min(1, "Missing field: task name"),
+    description: string().min(1, "Missing field: task description"),
+    day: z.string({ required_error: "Missing field: day" }),
+    time: z.string({ required_error: "Missing field: time" }),
+
+    assign: z.number({ required_error: "Missing field : user id" }),
+  })
+  .refine(
+    (value) => {
+      console.log(formatDate(value.day, value.time));
+      return (
+        formatDate(value.day, value.time).getTime() - Date.now() >=
+        5 * 1000 * 60
+      );
+    },
+    {
+      message: "Date is invalid. Minimum greater than now 5 minutes",
+      path: ["assign"],
+    },
+  );
 export type TaskDto = z.infer<typeof TaskSchema>;
-export type CreateTaskDto = TaskDto & {
+export type CreateTaskDto = {
+  taskName: string;
+  description: string;
+  estimate: Date;
+  assign: number;
   projectId: string;
+};
+
+export type UpdateTaskDto = {
+  state?: "todo" | "ongoing" | "done";
+  estimate?: Date;
+  description?: string;
 };

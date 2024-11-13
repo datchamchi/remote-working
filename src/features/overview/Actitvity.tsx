@@ -1,44 +1,68 @@
+import { Badge } from "@/components/ui/badge";
+import { Task } from "@/types/task.type";
 import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Text,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
 
-const data = [
-  { name: "M", complete: 1, incomplete: 0 },
-  { name: "Tu", complete: 2, incomplete: 0 },
-  { name: "Wed", complete: 3, incomplete: 1 },
-  { name: "Th", complete: 4, incomplete: 2 },
-  { name: "Fri", complete: 3, incomplete: 0 },
-  { name: "Sa", complete: 3, incomplete: 0 },
-  { name: "Sun", complete: 2, incomplete: 0 },
-];
-
-const Actitvity = () => {
+const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
+  active,
+  payload,
+}) => {
+  if (active && payload && payload.length) {
+    // const { name, count, uv } = payload[0].payload; // Dữ liệu của điểm được hover
+    const { name, count, tasks } = payload[0].payload as {
+      name: string;
+      count: number;
+      tasks: Task[];
+    };
+    return (
+      <div className="custom-tooltip">
+        {tasks.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {tasks.map((task, index) => (
+              <Badge key={index}>{task.taskName}</Badge>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+const Actitvity = ({
+  taskDone,
+  taskTodo,
+  taskOngoing,
+}: {
+  taskDone: Task[];
+  taskOngoing: Task[];
+  taskTodo: Task[];
+}) => {
+  const data = [
+    { name: "Todo", count: taskTodo.length, tasks: taskTodo },
+    { name: "Ongoing", count: taskOngoing.length, tasks: taskOngoing },
+    { name: "Done", count: taskDone.length, tasks: taskDone },
+    // { name: "Overdue", count: 4 },
+  ];
   return (
     <ResponsiveContainer>
-      <LineChart
-        className="h-full w-full"
-        data={data}
-        margin={{ left: -20, right: 10, top: 10 }}
-      >
+      <LineChart className="-mx-10" data={data}>
         <Line
           type="monotone"
-          dataKey="complete"
-          stroke="#000"
+          dataKey="count"
+          stroke="#2f09c6"
           strokeWidth={2}
-          // dot={false}
         />
-        {/* <Line type="monotone" dataKey="incomplete" stroke="red" /> */}
 
-        {/* <CartesianGrid stroke="#ccc" /> */}
         <XAxis dataKey="name" />
-        <Tooltip />
         <YAxis axisLine={false} tickLine={false} />
+        <Tooltip content={<CustomTooltip />} />
       </LineChart>
     </ResponsiveContainer>
   );

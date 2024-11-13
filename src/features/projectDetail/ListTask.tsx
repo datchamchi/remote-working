@@ -33,11 +33,11 @@ const ListTask = ({
     setOpenDialog(true);
   }
   useEffect(() => {
-    const percentage =
-      Math.floor(
-        listTask.filter((task) => task.state === "done").length /
-          listTask.length,
-      ) * 100;
+    const percentage = Math.floor(
+      (listTask.filter((task) => task.state === "done").length /
+        listTask.length) *
+        100,
+    );
     const timer = setTimeout(() => setProgress(percentage || 0), 500);
     return () => clearTimeout(timer);
   }, [listTask]);

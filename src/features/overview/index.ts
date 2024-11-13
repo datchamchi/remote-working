@@ -3,4 +3,14 @@ import HeaderOverview from "./Header";
 import ProjectRencently from "./ProjectRencently";
 import TotalTask from "./TotalTask";
 import TaskOverview from "./TaskOverview";
-export { Actitvity, ProjectRencently, HeaderOverview, TotalTask, TaskOverview };
+import TotalTaskSkeleton from "./TotalTaskSkeleton";
+import ActivitySkeleton from "./ActivitySkeleton";
+export {
+  Actitvity,
+  ProjectRencently,
+  HeaderOverview,
+  TotalTask,
+  TaskOverview,
+  TotalTaskSkeleton,
+  ActivitySkeleton,
+};
