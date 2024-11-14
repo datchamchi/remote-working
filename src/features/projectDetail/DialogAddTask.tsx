@@ -204,7 +204,6 @@ const DialogAddTask = ({
                                   if (!value) return;
                                   field.onChange(format(value, "dd-MM-yyy"));
                                 }}
-                                initialFocus
                               />
                             </PopoverContent>
                           </Popover>

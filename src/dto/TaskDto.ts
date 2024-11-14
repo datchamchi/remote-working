@@ -33,7 +33,7 @@ export type CreateTaskDto = {
 };
 
 export type UpdateTaskDto = {
-  state?: "todo" | "ongoing" | "done";
+  state?: "todo" | "ongoing" | "done" | "overdue";
   estimate?: Date;
   description?: string;
 };

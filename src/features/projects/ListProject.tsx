@@ -23,7 +23,7 @@ export default function ListProject() {
   const { data, isFetching, isSuccess, refetch } = useQuery({
     queryKey: ["get_projects", page],
     queryFn: async () => {
-      const res = await fetchAllProject(page);
+      const res = await fetchAllProject();
       return res;
     },
   });

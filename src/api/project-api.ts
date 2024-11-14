@@ -4,7 +4,7 @@ import { ResponseError, ResponseSuccess } from "@/types/response.type";
 import { CreateProjectDto } from "@/dto/ProjectDto";
 import { AxiosError } from "axios";
 
-export async function fetchAllProject(page: string): Promise<Project[]> {
+export async function fetchAllProject(): Promise<Project[]> {
   const res = await axiosInstance.get(`/api/projects`, {
     headers: { "Content-Type": "application/json" },
   });

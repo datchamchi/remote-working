@@ -1,4 +1,4 @@
-import { fetchNoti, updateAllInformNotify } from "@/api/noti-api";
+import { fetchNoti } from "@/api/noti-api";
 import {
   Popover,
   PopoverContent,
@@ -36,7 +36,7 @@ const Notify = () => {
           toast.error("Unexpected error occur");
         });
     }
-  }, [open]);
+  }, [open, refetch]);
   const notifyUnCheck = data
     ? data.reduce<number>((total, currentNotify) => {
         return currentNotify.state === "uncheck" ||

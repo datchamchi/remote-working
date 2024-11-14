@@ -15,8 +15,7 @@ const CustomTooltip: React.FC<TooltipProps<number, string>> = ({
   payload,
 }) => {
   if (active && payload && payload.length) {
-    // const { name, count, uv } = payload[0].payload; // Dữ liệu của điểm được hover
-    const { name, count, tasks } = payload[0].payload as {
+    const { tasks } = payload[0].payload as {
       name: string;
       count: number;
       tasks: Task[];

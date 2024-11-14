@@ -44,9 +44,7 @@ const DialogDetailTask = ({
   refetch: () => void;
 }) => {
   const [description, setDescription] = useState(task.description);
-  const [taskState, setTaskState] = useState<"todo" | "ongoing" | "done">(
-    task.state,
-  );
+  const [taskState, setTaskState] = useState(task.state);
   const [time, setTime] = useState(format(task.estimate, "hh:mm"));
   const [day, setDay] = useState(format(task.estimate, "dd-MM-yyyy"));
 
@@ -176,7 +174,6 @@ const DialogDetailTask = ({
                         if (!value) return;
                         setDay(format(value, "dd-MM-yyyy"));
                       }}
-                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
