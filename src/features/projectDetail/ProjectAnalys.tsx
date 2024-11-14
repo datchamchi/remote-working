@@ -50,8 +50,8 @@ const ProjectAnalys = ({
           setTaskAnalys(listTask);
           break;
         case "week": {
-          const startOfWeek = new Date(); // Sao chép ngày hiện tại
-          const endOfWeek = new Date(); // Sao chép ngày hiện tại
+          const startOfWeek = new Date();
+          const endOfWeek = new Date();
           const dayOfWeek = startOfWeek.getDay();
 
           startOfWeek.setHours(0, 0, 0, 0);

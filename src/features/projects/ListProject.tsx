@@ -20,7 +20,7 @@ export default function ListProject() {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const page = "1";
-  const { data, isFetching, isSuccess, isError, refetch } = useQuery({
+  const { data, isFetching, isSuccess, refetch } = useQuery({
     queryKey: ["get_projects", page],
     queryFn: async () => {
       const res = await fetchAllProject(page);
