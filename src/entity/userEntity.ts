@@ -9,12 +9,12 @@ import {
     OneToOne,
     ManyToMany,
 } from 'typeorm'
-import { PhotoEntity } from './photo.entity'
-import { ProjectEntity } from './project.entity'
-import { RoomEntity } from './room.entity'
-import { TaskEntity } from './task.entity'
-import { MessageEntity } from './message.entity'
-import { NotifyEntity } from './notify.entity'
+import { PhotoEntity } from './photoEntity'
+import { ProjectEntity } from './projectEntity'
+import { RoomEntity } from './roomEntity'
+import { TaskEntity } from './taskEntity'
+import { MessageEntity } from './messageEntity'
+import { NotifyEntity } from './notifyEntity'
 
 @Entity('user')
 export class UserEntity extends BaseEntity {

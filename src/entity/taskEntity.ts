@@ -7,8 +7,8 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { UserEntity } from './user.entity'
-import { ProjectEntity } from './project.entity'
+import { UserEntity } from './userEntity'
+import { ProjectEntity } from './projectEntity'
 
 @Entity('task')
 export class TaskEntity extends BaseEntity {

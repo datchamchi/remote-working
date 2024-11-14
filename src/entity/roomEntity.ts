@@ -6,8 +6,8 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { UserEntity } from './user.entity'
-import { MessageEntity } from './message.entity'
+import { UserEntity } from './userEntity'
+import { MessageEntity } from './messageEntity'
 
 @Entity('room')
 export class RoomEntity {

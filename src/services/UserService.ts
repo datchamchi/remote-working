@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm'
 import { AppDataSource } from '../config/database'
-import { UserEntity } from '../entity/user.entity'
+import { UserEntity } from '../entity/userEntity'
 
 export default class UserService {
     private readonly userRepository: Repository<UserEntity>

@@ -1,5 +1,5 @@
 import { CreateProjectDto } from '../../dto/ProjectDto'
-import { ProjectEntity } from '../../entity/project.entity'
+import { ProjectEntity } from '../../entity/projectEntity'
 
 export interface IProjectService {
     addProject(user: string, input: CreateProjectDto): Promise<ProjectEntity>

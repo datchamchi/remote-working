@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm'
-import { NotifyEntity } from './notify.entity'
+import { NotifyEntity } from './notifyEntity'
 
 @Entity('invite_notify')
 export class InviteNotifyEntity extends NotifyEntity {

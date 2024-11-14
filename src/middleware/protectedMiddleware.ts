@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { HttpCode } from '../../constant'
 import { AppDataSource } from '../config/database'
-import { UserEntity } from '../entity/user.entity'
+import { UserEntity } from '../entity/userEntity'
 
 const protectedMiddleware = async (
     req: Request,

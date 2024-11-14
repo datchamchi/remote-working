@@ -9,8 +9,8 @@ import {
     UpdateDateColumn,
 } from 'typeorm'
 
-import { UserEntity } from './user.entity'
-import { TaskEntity } from './task.entity'
+import { UserEntity } from './userEntity'
+import { TaskEntity } from './taskEntity'
 
 @Entity('project')
 export class ProjectEntity {

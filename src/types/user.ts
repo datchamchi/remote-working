@@ -1,5 +1,5 @@
-import { Project } from './project.type'
-import { Task } from './task.type'
+import { Project } from './project'
+import { Task } from './task'
 
 export type User = {
     id: number

@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io'
-import { DataType, ErrorType } from '../types/socket.type'
+import { DataType, ErrorType } from '../types/socket'
 import UserService from '../services/UserService'
 import { NotifyService } from '../services/notify/NotifyService'
 import { ProjectService } from '../services/project/ProjectService'

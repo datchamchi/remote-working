@@ -1,5 +1,5 @@
 import { CreateTaskDto } from '../../dto/TaskDto'
-import { TaskEntity } from '../../entity/task.entity'
+import { TaskEntity } from '../../entity/taskEntity'
 
 export interface ITaskService {
     getAllTasks(projectId: string): Promise<TaskEntity[]>

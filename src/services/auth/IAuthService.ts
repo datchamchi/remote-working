@@ -1,6 +1,6 @@
 import { LoginUserDto } from '../../dto/LoginUserDto'
 import { CreateUserDto } from '../../dto/UserDto'
-import { Token } from '../../types/token.type'
+import { Token } from '../../types/token'
 
 export default interface IAuthService {
     signUp(input: CreateUserDto)
