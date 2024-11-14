@@ -12,9 +12,7 @@ export const UserSchema = z
                 const regex = /^[\w.-]+@([\w-]+\.)+[a-zA-Z]{2,}$/
                 return RegExp(regex).exec(email.toLowerCase())
             }, 'Invalid email'),
-        phoneNumber: z.string({
-            required_error: 'Missing field: phone number',
-        }),
+        phoneNumber: z.optional(z.string()),
         photo: z.optional(
             z.object({
                 path: z.string(),
@@ -24,13 +22,20 @@ export const UserSchema = z
         ),
         password: z
             .string({ required_error: 'Missing field: password' })
-            .min(6, 'Password must have than 6 characters '),
-        passwordConfirm: z.string({
-            required_error: 'Missing field: password confirm',
-        }),
+            .min(1, 'Please provide your password'),
+        passwordConfirm: z
+            .string({
+                required_error: 'Missing field: password confirm',
+            })
+            .min(1, 'Please provide password confirm'),
     })
-    .refine((data) => data.password === data.passwordConfirm, {
-        message: 'Password and password confirm are not same',
-        path: ['passwordConfirm'],
-    })
+    .refine(
+        (data) =>
+            data.passwordConfirm.length === 0 ||
+            data.password === data.passwordConfirm,
+        {
+            message: 'Password and password confirm are not same',
+            path: ['passwordConfirm'],
+        }
+    )
 export type CreateUserDto = z.infer<typeof UserSchema>

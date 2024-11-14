@@ -1,7 +1,8 @@
 import { Router } from 'express'
-import { UserController } from '../controllers/UserController'
+import { UserController } from '../controllers'
 
 const userRouter = Router()
 const userController = new UserController()
-userRouter.route('/').get(userController.getAllUser)
+userRouter.route('/user-relate').get(userController.getAllUserRelate)
+
 export default userRouter

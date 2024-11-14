@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import passport from 'passport'
 
-import AuthController from '../controllers/AuthController'
-import uploader from '../config/cloudinary'
+import { uploader } from '../config'
+import { AuthController } from '../controllers'
+import { User } from '../types'
 
 const authRouter = Router()
 const authController = new AuthController()
@@ -16,9 +17,14 @@ authRouter.get(
 )
 authRouter.get(
     '/google/redirect',
-    passport.authenticate('google'),
+    passport.authenticate('google', {
+        session: false,
+    }),
     (req, res) => {
-        console.log('Redirect')
+        const data = req.user as { user: User; token: string }
+        res.redirect(
+            `${process.env.URL_FRONTEND}/your-tasks?accessToken=${data.token}&user=${encodeURIComponent(JSON.stringify(data.user))}&page=1&time=deadline&type=all`
+        )
     }
 )
 export default authRouter

@@ -1,7 +1,7 @@
 import { Project } from './project.type'
 import { Task } from './task.type'
 
-export default interface User {
+export type User = {
     id: number
     name: string
     email: string

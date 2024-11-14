@@ -1,17 +1,16 @@
 import { Server, Socket } from 'socket.io'
 import { DataType, ErrorType } from '../types/socket.type'
 import UserService from '../services/UserService'
-import { sender, SocketEvent } from '../../constant'
 import { NotifyService } from '../services/notify/NotifyService'
 import { ProjectService } from '../services/project/ProjectService'
-import { AppError } from '../utils/AppError'
-import mailtrapClient from '../config/mailtrap'
+import { SocketEvent } from '../../constant'
+import { AppError } from '../utils'
 
-export default class SocketController {
+export class SocketController {
     private readonly io: Server
-    private readonly userService
-    private readonly notifyService
-    private readonly projectService
+    private readonly userService: UserService
+    private readonly notifyService: NotifyService
+    private readonly projectService: ProjectService
     private connectedUsers: { socketId: string; email: string }[]
     constructor(io: Server) {
         this.connectedUsers = []
@@ -23,9 +22,10 @@ export default class SocketController {
 
     public connection = (client: Socket) => {
         const { email, id } = client
-        console.log(client.id)
-        this.connectedUsers.push({ email, socketId: id })
-
+        // check if user exist
+        const user = this.connectedUsers.find((user) => user.email === email)
+        if (user) user.socketId = id
+        else this.connectedUsers.push({ email, socketId: id })
         client.on(SocketEvent.INVITE_OTHER, this.handleInvitation(client))
         client.on(SocketEvent.ACCPEPT_INVITE, this.acceptInvite(client))
         client.on(SocketEvent.REFUSE_INVITE, this.refuseInvite(client))
@@ -60,17 +60,17 @@ export default class SocketController {
                     .emit(SocketEvent.USER_NOT_FOUND, responseUserNotFound)
                 if (!user) return
 
-                mailtrapClient
-                    .send({
-                        from: sender,
-                        to: [{ email: to }],
-                        subject: 'Invitation',
-                        text: content,
-                    })
-                    .then(() => {
-                        console.log('send email successfully')
-                    })
-                    .catch((err) => console.log(err))
+                // mailtrapClient
+                //     .send({
+                //         from: sender,
+                //         to: [{ email: to }],
+                //         subject: 'Invitation',
+                //         text: content,
+                //     })
+                //     .then(() => {
+                //         console.log('send email successfully')
+                //     })
+                //     .catch((err) => console.log(err))
                 // if invited user online ,send notify
 
                 const invitedUserOnline = this.connectedUsers.find(

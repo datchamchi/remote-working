@@ -25,6 +25,7 @@ const protectedMiddleware = async (
         // check email valid
         const userRepo = AppDataSource.getRepository(UserEntity)
         const user = await userRepo.findOne({ where: { email } })
+
         if (!user)
             return res.status(403).json({
                 status: 'fail',
@@ -33,8 +34,7 @@ const protectedMiddleware = async (
         req.email = email
 
         next()
-    } catch (error) {
-        console.log(error)
+    } catch {
         res.status(HttpCode.FORBIDDEN).json({
             status: 'fail',
             message: 'Forbidden',

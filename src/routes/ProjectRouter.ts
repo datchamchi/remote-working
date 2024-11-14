@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { ProjectController } from '../controllers/ProjectController'
-import taskRouter from './TaskRouter'
+
+import projectTaskRouter from './ProjectTaskRouter'
+import { ProjectController } from '../controllers'
 
 const projectRouter = Router()
 const projectController = new ProjectController()
@@ -9,5 +10,5 @@ projectRouter.get('/', projectController.getAllProjects)
 projectRouter.get('/:projectId', projectController.getProject)
 
 projectRouter.patch('/:projectId/invite', projectController.addUserIntoProject)
-projectRouter.use('/:projectId/tasks', taskRouter)
+projectRouter.use('/:projectId/tasks', projectTaskRouter)
 export default projectRouter

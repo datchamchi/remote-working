@@ -1,6 +1,10 @@
-import * as GooglePassPort from 'passport-google-oauth2'
+import GooglePassPort from 'passport-google-oauth20'
 import passport from 'passport'
-import User from '../types/user.type'
+
+import { AppDataSource } from './database'
+import { UserEntity } from '../entity'
+import { generateTokens } from '../utils'
+
 const GoogleStrategy = GooglePassPort.Strategy
 
 const clientID = process.env.GOOGLE_CLIENT_ID
@@ -17,11 +21,31 @@ passport.use(
             callbackURL: '/api/auth/google/redirect',
             passReqToCallback: true,
         },
-        function (accessToken: string, refreshToken: string, profile, done) {
-            // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-            //     return done(err, user)
-            // })
-            console.log(profile)
+        async function (req, accessToken, refreshToken, profile, cb) {
+            const {
+                _json: { email, name, picture },
+            } = profile
+            const userRepo = AppDataSource.getRepository(UserEntity)
+
+            if (!email) return
+            const { accessToken: token } = generateTokens({ email })
+            const userExist = await userRepo.findOne({
+                where: { email: email },
+                relations: ['photo'],
+            })
+
+            if (!userExist) {
+                const user = await userRepo.save({
+                    email,
+                    name,
+                    photo: {
+                        path: picture,
+                    },
+                })
+                return cb(null, { user, token })
+            }
+
+            return cb(null, { user: userExist, token })
         }
     )
 )

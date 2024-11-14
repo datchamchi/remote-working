@@ -2,15 +2,15 @@ import { Request, Response } from 'express'
 import cloudinary from 'cloudinary'
 import { ZodError } from 'zod'
 
-import { AppError } from '../utils/AppError'
 import { COOKIE_REFRESH_EXPIRE, HttpCode } from '../../constant'
 import AuthService from '../services/auth/AuthService'
 import { CreateUserDto, UserSchema } from '../dto/UserDto'
 import { LoginUserDto, LoginUserSchema } from '../dto/LoginUserDto'
 import { validateRequest } from '../utils/validateRequest'
+import { AppError } from '../utils'
 
-export default class AuthController {
-    private readonly authService
+export class AuthController {
+    private readonly authService: AuthService
     constructor() {
         this.authService = new AuthService()
     }

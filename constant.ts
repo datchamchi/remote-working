@@ -17,6 +17,7 @@ export const COOKIE_REFRESH_EXPIRE = 30 * 24 * 60 * 60 * 1000
 
 export const LIMIT_PROJECT_PAGE = 2
 export const LIMIT_NOTIFY = 3
+export const LIMIT_TASK = 5
 
 export enum SocketEvent {
     INVITE_OTHER = 'invitation',

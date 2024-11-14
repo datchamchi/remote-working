@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
-import { RoomEntity } from './room.entity'
+
 import { UserEntity } from './user.entity'
 import { TaskEntity } from './task.entity'
 
@@ -35,9 +35,6 @@ export class ProjectEntity {
 
     @OneToMany(() => TaskEntity, (task) => task.project)
     tasks: TaskEntity[]
-
-    @OneToMany(() => RoomEntity, (room) => room.project)
-    rooms: RoomEntity
 
     @CreateDateColumn()
     createdAt: Date

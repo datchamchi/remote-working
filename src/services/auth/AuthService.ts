@@ -1,26 +1,23 @@
 import { ZodError } from 'zod'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { Repository } from 'typeorm'
 
 import IAuthService from './IAuthService'
-import { AppDataSource } from '../../config/database'
-import { UserEntity } from '../../entity/user.entity'
-import { CreateUserDto } from '../../dto/UserDto'
-import User from '../../types/user.type'
-import { AppError } from '../../utils/AppError'
+import { AppDataSource } from '../../config'
+import { UserEntity } from '../../entity'
+import { CreateUserDto, LoginUserDto } from '../../dto'
+import { AppError, generateTokens } from '../../utils'
 import { ACCESS_TOKEN_EXPIRE, HttpCode } from '../../../constant'
-import { LoginUserDto } from '../../dto/LoginUserDto'
-
-import generateTokens from '../../utils/generateTokens'
-import { JwtPayload } from '../../types/token.type'
+import { JwtPayload } from '../../types'
 
 export default class AuthService implements IAuthService {
-    private readonly userRepository
+    private readonly userRepository: Repository<UserEntity>
     constructor() {
         this.userRepository = AppDataSource.getRepository(UserEntity)
     }
 
-    signUp = async (input: CreateUserDto): Promise<Omit<User, 'password'>> => {
+    signUp = async (input: CreateUserDto) => {
         // check user exist
         const { email, password: passwordInput } = input
         const existUser = await this.userRepository.findOne({
@@ -66,7 +63,11 @@ export default class AuthService implements IAuthService {
             relations: ['photo'],
         })
         if (!user) throw new AppError(400, 'User not exist')
-
+        if (!user.password)
+            throw new AppError(
+                400,
+                'This email is linked to a Google account. Please login with Google.'
+            )
         const checkPassword = await bcrypt.compare(passwordInput, user.password)
         if (!checkPassword) throw new AppError(400, 'Password incorrect')
         const { password, ...userWithoutPassword } = user

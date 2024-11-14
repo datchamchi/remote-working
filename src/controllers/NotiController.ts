@@ -1,16 +1,12 @@
 import { Request, Response } from 'express'
 import { NotifyService } from '../services/notify/NotifyService'
-import { responseError } from '../utils/responseError'
+
 import { HttpCode } from '../../constant'
-import {
-    CreateNotifyDto,
-    NotifySchema,
-    UpdateNotifyDto,
-} from '../dto/NotifyDto'
-import { validateRequest } from '../utils/validateRequest'
+import { CreateNotifyDto, NotifySchema, UpdateNotifyDto } from '../dto'
+import { responseError, validateRequest } from '../utils'
 
 export class NotiController {
-    private readonly notiService
+    private readonly notiService: NotifyService
     constructor() {
         this.notiService = new NotifyService()
     }
@@ -50,7 +46,6 @@ export class NotiController {
         try {
             const { type } = req.body
             const { notifyId } = req.params
-            console.log(notifyId, type)
             if (type === 'inform')
                 await this.notiService.updateInformNotiStatus(notifyId)
             else if (type === 'invite')
@@ -58,6 +53,18 @@ export class NotiController {
             res.status(200).json({
                 status: 'success',
                 message: 'Update inform success',
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
+    updateAllStatus = async (req: Request, res: Response) => {
+        try {
+            const { email } = req
+            await this.notiService.updateAllInformNotiStatus(email)
+            res.status(200).json({
+                status: 'success',
+                message: 'All messages are read',
             })
         } catch (err) {
             responseError(res, err)

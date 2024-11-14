@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { ACCESS_TOKEN_EXPIRE, REFRESH_TOKEN_EXPIRE } from '../../constant'
-export default function generateTokens(payload: object) {
+export function generateTokens(payload: object) {
     const accessToken = jwt.sign(payload, String(process.env.ACCESS_API_KEY), {
         expiresIn: ACCESS_TOKEN_EXPIRE,
     })

@@ -1,18 +1,21 @@
-import { LIMIT_NOTIFY } from '../../../constant'
-import { AppDataSource } from '../../config/database'
-import { CreateNotifyDto } from '../../dto/NotifyDto'
-import { InformNotifyEntity } from '../../entity/informNoti.entity'
-import { InviteNotifyEntity } from '../../entity/inviteNoti.entity'
-import { NotifyEntity } from '../../entity/notify.entity'
-import { UserEntity } from '../../entity/user.entity'
-import { AppError } from '../../utils/AppError'
+import { Repository } from 'typeorm'
+
 import { INotifyService } from './INotifyService'
+import {
+    InformNotifyEntity,
+    InviteNotifyEntity,
+    NotifyEntity,
+    UserEntity,
+} from '../../entity'
+import { AppError } from '../../utils'
+import { AppDataSource } from '../../config'
+import { CreateNotifyDto } from '../../dto'
 
 export class NotifyService implements INotifyService {
-    private readonly notifRepo
-    private readonly userRepo
-    private readonly informNotiRepo
-    private readonly inviteNotiRepo
+    private readonly notifRepo: Repository<NotifyEntity>
+    private readonly userRepo: Repository<UserEntity>
+    private readonly informNotiRepo: Repository<InformNotifyEntity>
+    private readonly inviteNotiRepo: Repository<InviteNotifyEntity>
     constructor() {
         this.notifRepo = AppDataSource.getRepository(NotifyEntity)
         this.informNotiRepo = AppDataSource.getRepository(InformNotifyEntity)
@@ -64,5 +67,14 @@ export class NotifyService implements INotifyService {
         if (!notify) throw new AppError(400, 'Inform not found')
         notify.state = 'check'
         await this.inviteNotiRepo.save(notify)
+    }
+    async updateAllInformNotiStatus(email: string) {
+        const notifies = await this.informNotiRepo.find({
+            where: { user: { email }, state: 'unseen' },
+        })
+        const data = notifies.map((notify) =>
+            Object.assign(notify, { state: 'seen' })
+        )
+        return await this.informNotiRepo.save(data)
     }
 }

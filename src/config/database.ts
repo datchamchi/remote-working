@@ -1,13 +1,15 @@
 import { DataSource } from 'typeorm'
-import { UserEntity } from '../entity/user.entity'
-import { ProjectEntity } from '../entity/project.entity'
-import { RoomEntity } from '../entity/room.entity'
-import { MessageEntity } from '../entity/message.entity'
-import { TaskEntity } from '../entity/task.entity'
-import { NotifyEntity } from '../entity/notify.entity'
-import { PhotoEntity } from '../entity/photo.entity'
-import { InformNotifyEntity } from '../entity/informNoti.entity'
-import { InviteNotifyEntity } from '../entity/inviteNoti.entity'
+import {
+    InformNotifyEntity,
+    InviteNotifyEntity,
+    MessageEntity,
+    NotifyEntity,
+    PhotoEntity,
+    ProjectEntity,
+    RoomEntity,
+    TaskEntity,
+    UserEntity,
+} from '../entity'
 
 export const AppDataSource = new DataSource({
     type: 'mysql',

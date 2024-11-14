@@ -9,12 +9,12 @@ import {
     OneToOne,
     ManyToMany,
 } from 'typeorm'
-import { RoomEntity } from './room.entity'
-import { MessageEntity } from './message.entity'
-import { NotifyEntity } from './notify.entity'
 import { PhotoEntity } from './photo.entity'
 import { ProjectEntity } from './project.entity'
+import { RoomEntity } from './room.entity'
 import { TaskEntity } from './task.entity'
+import { MessageEntity } from './message.entity'
+import { NotifyEntity } from './notify.entity'
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -27,13 +27,13 @@ export class UserEntity extends BaseEntity {
     @Column({ unique: true })
     email: string
 
-    @Column()
-    phoneNumber: string
+    @Column({ nullable: true })
+    phoneNumber?: string
 
     @OneToOne(() => PhotoEntity, (photo) => photo.user, { cascade: true })
     photo: PhotoEntity
 
-    @Column()
+    @Column({ nullable: true })
     password: string
 
     @ManyToMany(() => ProjectEntity, (project) => project.users)
@@ -42,7 +42,7 @@ export class UserEntity extends BaseEntity {
     @OneToMany(() => TaskEntity, (task) => task.user)
     tasks: TaskEntity[]
 
-    @OneToMany(() => RoomEntity, (room) => room.user)
+    @ManyToMany(() => RoomEntity, (room) => room.users)
     rooms: RoomEntity[]
 
     @OneToMany(() => MessageEntity, (message) => message.user)

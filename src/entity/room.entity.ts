@@ -1,11 +1,11 @@
 import {
-    Column,
     Entity,
-    ManyToOne,
+    JoinTable,
+    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm'
-import { ProjectEntity } from './project.entity'
+
 import { UserEntity } from './user.entity'
 import { MessageEntity } from './message.entity'
 
@@ -14,17 +14,9 @@ export class RoomEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    roomName: string
-
-    @Column()
-    numberMember: number
-
-    @ManyToOne(() => ProjectEntity, (project) => project.rooms)
-    project: ProjectEntity
-
-    @ManyToOne(() => UserEntity, (user) => user.rooms)
-    user: UserEntity
+    @ManyToMany(() => UserEntity, (user) => user.rooms, { cascade: true })
+    @JoinTable({ name: 'room_user' })
+    users: UserEntity[]
 
     @OneToMany(() => MessageEntity, (message) => message.room)
     messages: MessageEntity[]

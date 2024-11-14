@@ -1,14 +1,15 @@
+import { Repository } from 'typeorm'
+
 import { HttpCode, LIMIT_PROJECT_PAGE } from '../../../constant'
-import { AppDataSource } from '../../config/database'
-import { CreateProjectDto } from '../../dto/ProjectDto'
-import { ProjectEntity } from '../../entity/project.entity'
-import { UserEntity } from '../../entity/user.entity'
-import { AppError } from '../../utils/AppError'
+import { AppDataSource } from '../../config'
+import { ProjectEntity, UserEntity } from '../../entity'
 import { IProjectService } from './IProjectService'
+import { CreateProjectDto } from '../../dto'
+import { AppError } from '../../utils'
 
 export class ProjectService implements IProjectService {
-    private readonly projectRepo
-    private readonly userRepo
+    private readonly projectRepo: Repository<ProjectEntity>
+    private readonly userRepo: Repository<UserEntity>
     constructor() {
         this.projectRepo = AppDataSource.getRepository(ProjectEntity)
         this.userRepo = AppDataSource.getRepository(UserEntity)
@@ -52,12 +53,6 @@ export class ProjectService implements IProjectService {
             .select(['project'])
 
             .getMany()
-        // skip,
-        // take: LIMIT_PROJECT_PAGE,
-        // order: {
-        //     projectName: name,
-        //     createdAt: createdAt,
-        // },
 
         return projects
     }

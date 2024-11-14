@@ -3,7 +3,7 @@ export type Token = {
     refreshToken: string
 }
 
-export interface JwtPayload {
+export type JwtPayload = {
     user: string
     iat: number
     exp: number

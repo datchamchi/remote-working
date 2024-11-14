@@ -14,3 +14,9 @@ export const TaskSchema = z.object({
     assign: z.number({ required_error: 'Missing field: user id assign' }),
 })
 export type CreateTaskDto = z.infer<typeof TaskSchema>
+
+export type UpdateTaskDto = {
+    state?: 'todo' | 'ongoing' | 'done' | 'overdue'
+    estimate?: Date
+    description?: string
+}

@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
 import { ProjectService } from '../services/project/ProjectService'
-import { validateRequest } from '../utils/validateRequest'
-import { CreateProjectDto, ProjectSchema } from '../dto/ProjectDto'
+
 import { HttpCode } from '../../constant'
-import { responseError } from '../utils/responseError'
-import { SORT_PARAM } from '../types/index.type'
+import { CreateProjectDto, ProjectSchema } from '../dto'
+import { responseError, validateRequest } from '../utils'
+import { SORT_PARAM } from '../types'
 
 export class ProjectController {
-    private readonly projectService
+    private readonly projectService: ProjectService
     constructor() {
         this.projectService = new ProjectService()
     }

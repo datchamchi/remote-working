@@ -2,8 +2,7 @@ import { Server } from 'socket.io'
 import { Server as HttpServer } from 'http'
 import { AppError } from './utils/AppError'
 import jwt from 'jsonwebtoken'
-
-import SocketController from './controllers/SocketController'
+import { SocketController } from './controllers'
 
 export class ServerSocket {
     // public static instance: ServerSocket
@@ -23,6 +22,7 @@ export class ServerSocket {
         // middleware to authen token
         this.io.use(async (socket, next) => {
             const token = socket.handshake.headers.authorization
+
             if (!token) return next(new AppError(401, 'Unauthorize'))
             try {
                 const { email } = <jwt.UserJwtPayload>(

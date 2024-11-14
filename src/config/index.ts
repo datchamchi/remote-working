@@ -1,4 +1,4 @@
-export * from './cloudinary'
-export * from './database'
-export * from './passport'
-export * from './mailtrap'
+export { uploader } from './cloudinary'
+export { AppDataSource } from './database'
+
+export { mailtrapClient } from './mailtrap'

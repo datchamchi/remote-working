@@ -25,7 +25,7 @@ export class TaskEntity extends BaseEntity {
     description: string
 
     @Column({ default: 'todo' })
-    state: 'todo' | 'ongoing' | 'done'
+    state: 'todo' | 'ongoing' | 'done' | 'overdue'
 
     @Column()
     estimate: Date

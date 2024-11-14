@@ -8,6 +8,4 @@ import { MailtrapClient } from 'mailtrap'
 const TOKEN = process.env.MAILTRAP_API
 
 if (!TOKEN) throw new Error('ERROR CONFIG MAILTRAP')
-const mailtrapClient = new MailtrapClient({ token: TOKEN })
-
-export default mailtrapClient
+export const mailtrapClient = new MailtrapClient({ token: TOKEN })
