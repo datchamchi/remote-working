@@ -21,6 +21,7 @@ import DialogDetailTask from "./DialogDetailTask";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllTasksByUser, fetchTotalTaskPage } from "@/api/task-api";
 import { format } from "date-fns";
+import TaskTableSkeleton from "./TaskTableSkeleton";
 
 const TaskTable = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,7 +42,7 @@ const TaskTable = () => {
     queryKey: ["get_total_task_page", time, type],
     queryFn: () => fetchTotalTaskPage(time, type),
   });
-  if (isFetching) return;
+  if (isFetching) return <TaskTableSkeleton />;
 
   return (
     <>

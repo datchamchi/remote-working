@@ -1,5 +1,6 @@
 import { API_SIGNUP } from "@/api/url";
 import { ResponseError } from "@/types/response.type";
+import Spinner from "@/ui/Spinner";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,9 +13,11 @@ const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [message, setMessage] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   function handleSignUp() {
+    setIsLoading(true);
     setMessage([]);
     axios
       .post(
@@ -41,6 +44,9 @@ const SignUp = () => {
             }
           }
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
   return (
@@ -159,7 +165,7 @@ const SignUp = () => {
               onClick={handleSignUp}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign up
+              {isLoading ? <Spinner h={5} w={5} /> : "Sign up"}
             </button>
           </div>
         </div>

@@ -5,15 +5,18 @@ import axios, { AxiosError } from "axios";
 
 import { API_LOGIN } from "../api/url";
 import { LoginSuccessMessage, ResponseError } from "../types/response.type";
+import Spinner from "@/ui/Spinner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   function handleSubmit() {
     setMessage([]);
+    setIsLoading(true);
     axios
       .post(
         `${import.meta.env.VITE_URL_BACKEND}${API_LOGIN}`,
@@ -30,7 +33,7 @@ const Login = () => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("user", JSON.stringify(user));
         setTimeout(() => {
-          navigate("/your-tasks");
+          navigate("/your-tasks?page=1&time=deadline&type=all");
         }, 2000);
       })
       .catch((err: unknown) => {
@@ -44,6 +47,9 @@ const Login = () => {
             }
           }
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
   return (
@@ -113,7 +119,7 @@ const Login = () => {
               onClick={handleSubmit}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Log in
+              {isLoading ? <Spinner h={5} w={5} /> : "Login"}
             </button>
           </div>
         </div>
