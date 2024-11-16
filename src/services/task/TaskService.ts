@@ -17,15 +17,14 @@ export default class TaskService implements ITaskService {
         this.userRepo = AppDataSource.getRepository(UserEntity)
     }
     async getAllTasks(projectId: string): Promise<TaskEntity[]> {
-        const tasks = this.taskRepo
+        const tasks = await this.taskRepo
             .createQueryBuilder('task')
             .innerJoinAndSelect('task.project', 'project')
             .where('project.id =:projectId', { projectId })
             .innerJoinAndSelect('task.user', 'user')
             .leftJoinAndSelect('user.photo', 'photo')
-            .select(['task', 'user.email', 'photo.path'])
+            .select(['task', 'user.email', 'user.name', 'photo.path'])
             .getMany()
-
         return tasks
     }
     async addTask(projectId: string, input: CreateTaskDto) {
