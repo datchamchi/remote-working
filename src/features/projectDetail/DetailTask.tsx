@@ -34,19 +34,39 @@ import { deleteTask, updateTask } from "@/api/task-api";
 import Spinner from "@/ui/Spinner";
 import { formatDate } from "@/utils/utils";
 import { toast } from "sonner";
-const DialogDetailTask = ({
+import { Project } from "@/types/project.type";
+import { useSelector } from "react-redux";
+import { selectAuth } from "../auth/authSlice";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+const DetailTask = ({
   children,
   task,
+  project,
   refetch,
 }: {
   children: ReactNode;
   task: Task;
+  project: Project;
   refetch: () => void;
 }) => {
   const [description, setDescription] = useState(task.description);
   const [taskState, setTaskState] = useState(task.state);
   const [time, setTime] = useState(format(task.estimate, "hh:mm"));
   const [day, setDay] = useState(format(task.estimate, "dd-MM-yyyy"));
+  const [openChooseUser, setOpenChooseUser] = useState(false);
+  const currentUser = useSelector(selectAuth).user;
+  const checkTaskPermission =
+    currentUser?.email === task.user.email ||
+    currentUser?.email === project.leader;
+  const [username, setUsername] = useState(task.user.name);
 
   const { mutate: update, isPending: isUpdating } = useMutation({
     mutationFn: () =>
@@ -85,6 +105,7 @@ const DialogDetailTask = ({
           <DialogHeader>
             <DialogTitle className="mb-2">{task.taskName}</DialogTitle>
             <div className="flex items-center gap-2 font-semibold">
+              <DialogDescription></DialogDescription>
               {task.project && (
                 <>
                   <DialogDescription>
@@ -105,7 +126,7 @@ const DialogDetailTask = ({
               </Label>
               <Input
                 id="description"
-                disabled={task.state === "overdue"}
+                disabled={task.state === "overdue" || !checkTaskPermission}
                 defaultValue={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="col-span-3"
@@ -128,7 +149,7 @@ const DialogDetailTask = ({
                 Proccess
               </Label>
               <Select
-                disabled={task.state === "overdue"}
+                disabled={task.state === "overdue" || !checkTaskPermission}
                 onValueChange={(value: "todo" | "done" | "ongoing") =>
                   setTaskState(value)
                 }
@@ -150,7 +171,7 @@ const DialogDetailTask = ({
               </Label>
               <div className="col-span-3 flex items-center gap-2">
                 <Input
-                  disabled={task.state === "overdue"}
+                  disabled={task.state === "overdue" || !checkTaskPermission}
                   type="time"
                   className="rounded-lg border-2 border-slate-200 px-2 py-1"
                   defaultValue={time}
@@ -160,7 +181,9 @@ const DialogDetailTask = ({
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      disabled={task.state === "overdue"}
+                      disabled={
+                        task.state === "overdue" || !checkTaskPermission
+                      }
                       variant={"outline"}
                       className={cn(
                         "flex-1 justify-start text-left font-normal",
@@ -189,29 +212,83 @@ const DialogDetailTask = ({
               <Label htmlFor="description" className="text-start">
                 Assignee
               </Label>
+              <div>
+                <Popover open={openChooseUser} onOpenChange={setOpenChooseUser}>
+                  <PopoverTrigger
+                    asChild
+                    disabled={currentUser?.email !== project.leader}
+                  >
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={"false"}
+                      className="w-[280px] justify-between"
+                    >
+                      {username}
+                      <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search User..."
+                        className="h-9 w-full"
+                      />
+                      <CommandList>
+                        <CommandEmpty>No User Found</CommandEmpty>
+                        <CommandGroup>
+                          {project.users.map((user) => (
+                            <CommandItem
+                              key={user.name}
+                              value={user.name}
+                              onSelect={(currentValue) => {
+                                console.log(currentValue);
+                                setUsername(currentValue);
+                                setOpenChooseUser(false);
+                              }}
+                            >
+                              {user.name}
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  username === user.name
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
             {task.state === "overdue" && (
-              <div className="font-semibold text-red-600">
+              <div className="text-end font-semibold italic text-red-600">
                 This Task is overdue
               </div>
             )}
           </div>
-          <DialogFooter>
-            <Button onClick={() => handleDeleteTask()}>
-              {isDeleting ? <Spinner h={5} w={5} /> : "Delete"}
-            </Button>
-            <Button
-              variant={"destructive"}
-              disabled={task.state === "overdue"}
-              onClick={() => update()}
-            >
-              {isUpdating ? <Spinner h={5} w={5} /> : "Save changes"}
-            </Button>
-          </DialogFooter>
+          {checkTaskPermission && (
+            <DialogFooter>
+              <Button onClick={() => handleDeleteTask()}>
+                {isDeleting ? <Spinner h={5} w={5} /> : "Delete"}
+              </Button>
+              <Button
+                variant={"destructive"}
+                disabled={task.state === "overdue" || !checkTaskPermission}
+                onClick={() => update()}
+              >
+                {isUpdating ? <Spinner h={5} w={5} /> : "Save changes"}
+              </Button>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default DialogDetailTask;
+export default DetailTask;

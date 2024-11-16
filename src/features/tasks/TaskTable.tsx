@@ -80,7 +80,7 @@ const TaskTable = () => {
                 <TableCell className="max-w-80">{task.description}</TableCell>
                 <TableCell>
                   <div
-                    className={`rounded-lg px-2 py-1 text-center text-white ${task.state == "todo" ? "bg-primary" : task.state == "ongoing" ? "bg-orange-500" : task.state === "done" ? "bg-green-600" : task.state === "overdue" ? "bg-red-600" : ""}`}
+                    className={`rounded-lg px-2 py-1 text-center text-white ${task.state === "todo" ? "bg-primary" : task.state === "ongoing" ? "bg-orange-500" : task.state === "done" ? "bg-green-600" : task.state === "overdue" ? "bg-red-600" : ""}`}
                   >
                     {task.state}
                   </div>

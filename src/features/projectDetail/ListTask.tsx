@@ -89,7 +89,12 @@ const ListTask = ({
       )}
       <div className="divide-y-2 divide-slate-200">
         {listTask.map((task) => (
-          <TaskRow task={task} key={task.id} />
+          <TaskRow
+            task={task}
+            key={task.id}
+            refetch={refetch}
+            project={project}
+          />
         ))}
       </div>
     </div>
