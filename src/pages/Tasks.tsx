@@ -20,7 +20,8 @@ const Tasks = () => {
     if (!token || !userData) return;
 
     const user = JSON.parse(decodeURIComponent(userData));
-
+    console.log(user);
+    console.log(token);
     // Save to localStorage
     localStorage.setItem("accessToken", token);
     localStorage.setItem("user", JSON.stringify(user));
