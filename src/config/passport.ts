@@ -25,27 +25,34 @@ passport.use(
             const {
                 _json: { email, name, picture },
             } = profile
-            const userRepo = AppDataSource.getRepository(UserEntity)
 
-            if (!email) return
-            const { accessToken: token } = generateTokens({ email })
-            const userExist = await userRepo.findOne({
-                where: { email: email },
-                relations: ['photo'],
-            })
-            console.log(userExist)
-            if (!userExist) {
-                const user = await userRepo.save({
-                    email,
-                    name,
-                    photo: {
-                        path: picture,
-                    },
+            if (!email) return cb(null, false)
+
+            try {
+                const userRepo = AppDataSource.getRepository(UserEntity)
+
+                const userExist = await userRepo.findOne({
+                    where: { email: email },
+                    relations: ['photo'],
                 })
-                return cb(null, { user, token })
-            }
+                let user: UserEntity
 
-            return cb(null, { user: userExist, token })
+                if (!userExist) {
+                    user = await userRepo.save({
+                        email,
+                        name,
+                        photo: { path: picture },
+                    })
+                } else {
+                    user = userExist
+                }
+                const { accessToken: token } = generateTokens({ email })
+
+                return cb(null, { user, token })
+            } catch (error) {
+                console.error('Error during Google OAuth callback:', error)
+                return cb(error, false)
+            }
         }
     )
 )
