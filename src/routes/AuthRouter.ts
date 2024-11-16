@@ -17,6 +17,7 @@ authRouter.get(
 )
 authRouter.get(
     '/google/redirect',
+    passport.authenticate('google', { failureRedirect: '/' }),
     passport.authenticate('google', {
         session: false,
     }),

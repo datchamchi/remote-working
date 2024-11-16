@@ -18,7 +18,7 @@ import './config/passport'
 import passport from 'passport'
 const app = express()
 app.use(cookieParse())
-app.use(cors({ origin: process.env.URL_FRONTEND, credentials: true }))
+app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json())
 
 app.use(passport.initialize())
