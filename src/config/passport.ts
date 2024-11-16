@@ -18,7 +18,7 @@ passport.use(
         {
             clientID: clientID,
             clientSecret: clientSecret,
-            callbackURL: '/api/auth/google/redirect',
+            callbackURL: '/api/auth/redirect',
             passReqToCallback: true,
         },
         async function (req, accessToken, refreshToken, profile, cb) {
@@ -33,7 +33,7 @@ passport.use(
                 where: { email: email },
                 relations: ['photo'],
             })
-
+            console.log(userExist)
             if (!userExist) {
                 const user = await userRepo.save({
                     email,

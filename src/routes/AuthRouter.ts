@@ -16,8 +16,9 @@ authRouter.get(
     passport.authenticate('google', { scope: ['email', 'profile'] })
 )
 authRouter.get(
-    '/google/redirect',
+    '/redirect',
     passport.authenticate('google', {
+        failureRedirect: `${process.env.URL_FRONTEND}/login`,
         session: false,
     }),
     (req, res) => {
