@@ -19,4 +19,5 @@ export type UpdateTaskDto = {
     state?: 'todo' | 'ongoing' | 'done' | 'overdue'
     estimate?: Date
     description?: string
+    assign?: number
 }

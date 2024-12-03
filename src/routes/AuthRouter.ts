@@ -23,7 +23,6 @@ authRouter.get(
     }),
     (req, res) => {
         const data = req.user as { user: User; token: string }
-        console.log(data)
         res.redirect(
             `${process.env.URL_FRONTEND}/your-tasks?accessToken=${data.token}&user=${encodeURIComponent(JSON.stringify(data.user))}&page=1&time=deadline&type=all`
         )

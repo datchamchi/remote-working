@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm'
 import { RoomEntity } from './roomEntity'
 import { UserEntity } from './userEntity'
 
@@ -9,6 +15,12 @@ export class MessageEntity {
 
     @Column()
     content: string
+
+    @Column()
+    type: 'text' | 'img'
+
+    @CreateDateColumn()
+    createdAt: Date
 
     @ManyToOne(() => RoomEntity, (room) => room.messages)
     room: RoomEntity

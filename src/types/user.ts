@@ -5,7 +5,7 @@ export type User = {
     id: number
     name: string
     email: string
-    phoneNumber: string
+    phone: string
     password: string
     photo: {
         id: number
@@ -16,9 +16,6 @@ export type User = {
 
     tasks?: Task[]
     projects?: Project[]
-    // rooms: RoomEntity[]
-    // messages: MessageEntity[]
-    // informations: InformationEntity[]
     createdAt: Date
     updatedAt: Date
 }

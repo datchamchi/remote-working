@@ -12,7 +12,7 @@ export const UserSchema = z
                 const regex = /^[\w.-]+@([\w-]+\.)+[a-zA-Z]{2,}$/
                 return RegExp(regex).exec(email.toLowerCase())
             }, 'Invalid email'),
-        phoneNumber: z.optional(z.string()),
+        phone: z.optional(z.string()),
         photo: z.optional(
             z.object({
                 path: z.string(),
@@ -39,3 +39,11 @@ export const UserSchema = z
         }
     )
 export type CreateUserDto = z.infer<typeof UserSchema>
+
+export type UpdateUserDto = {
+    name?: string
+    phone?: string
+    currentPass?: string
+    newPass?: string
+    confirmPass?: string
+}

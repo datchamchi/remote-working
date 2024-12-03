@@ -28,7 +28,7 @@ export class UserEntity extends BaseEntity {
     email: string
 
     @Column({ nullable: true })
-    phoneNumber?: string
+    phone?: string
 
     @OneToOne(() => PhotoEntity, (photo) => photo.user, { cascade: true })
     photo: PhotoEntity

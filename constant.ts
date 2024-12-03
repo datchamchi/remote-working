@@ -24,8 +24,14 @@ export enum SocketEvent {
     ACCPEPT_INVITE = 'accept',
     REFUSE_INVITE = 'refuse',
     USER_NOT_FOUND = 'not_found',
+    NEW_MESSAGE = 'new_message',
     NOTIFY_USER = 'notify',
     ERROR = 'error',
+    INVITE_CALL = 'invite_call',
+    END_CALL = 'end_call',
+    ACCEPT_CALL = 'accept_call',
+    REFUSE_CALL = 'refuse_call',
+    NEW_FILE_MESSAGE = 'new_file',
 }
 const SENDER_EMAIL = 'remote_working@gmail.io'
 

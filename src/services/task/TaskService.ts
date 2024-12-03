@@ -89,16 +89,21 @@ export default class TaskService implements ITaskService {
     async updateTask(user: string, taskId: string, dto: UpdateTaskDto) {
         const task = await this.taskRepo.findOne({
             where: { id: Number(taskId) },
-            relations: ['user'],
+            relations: ['user', 'project'],
         })
         if (!task) throw new AppError(400, 'Task not found')
-        if (task.user.email !== user)
+        if (task.user.email !== user && task.project.leader !== user)
             throw new AppError(403, 'User is not permission to update task')
-        const { description, estimate, state } = dto
+        const { description, estimate, state, assign } = dto
 
         if (description) task.description = description
         if (estimate) task.estimate = estimate
         if (state) task.state = state
+        if (assign) {
+            const user = await this.userRepo.findOne({ where: { id: assign } })
+            if (!user) throw new AppError(400, 'User not found')
+            task.user = user
+        }
         const updated = await this.taskRepo.save(task)
         return updated
     }

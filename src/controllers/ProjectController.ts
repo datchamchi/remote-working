@@ -8,6 +8,7 @@ import { SORT_PARAM } from '../types'
 
 export class ProjectController {
     private readonly projectService: ProjectService
+
     constructor() {
         this.projectService = new ProjectService()
     }

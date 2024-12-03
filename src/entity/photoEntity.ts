@@ -17,10 +17,10 @@ export class PhotoEntity extends BaseEntity {
     path: string
 
     @Column({ nullable: true })
-    size?: number
+    size: number
 
     @Column({ nullable: true })
-    filename?: string
+    filename: string
 
     @OneToOne(() => UserEntity, (user) => user.photo)
     @JoinColumn()

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 
 import UserService from '../services/UserService'
 import { responseError } from '../utils'
+import { UpdateUserDto } from '../dto/UserDto'
 
 export class UserController {
     private readonly userService: UserService
@@ -20,6 +21,22 @@ export class UserController {
             res.status(200).json({
                 status: 'success',
                 data: users,
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
+    update = async (
+        req: Request<{ userId: string }, object, UpdateUserDto>,
+        res: Response
+    ) => {
+        const { userId } = req.params
+        const file: Express.Multer.File | undefined = req.file
+        try {
+            const user = await this.userService.update(userId, req.body, file)
+            res.status(200).json({
+                status: 'success',
+                data: user,
             })
         } catch (err) {
             responseError(res, err)

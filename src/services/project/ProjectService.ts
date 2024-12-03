@@ -2,7 +2,7 @@ import { Repository } from 'typeorm'
 
 import { HttpCode, LIMIT_PROJECT_PAGE } from '../../../constant'
 import { AppDataSource } from '../../config'
-import { ProjectEntity, UserEntity } from '../../entity'
+import { ProjectEntity, RoomEntity, UserEntity } from '../../entity'
 import { IProjectService } from './IProjectService'
 import { CreateProjectDto } from '../../dto'
 import { AppError } from '../../utils'
@@ -10,15 +10,17 @@ import { AppError } from '../../utils'
 export class ProjectService implements IProjectService {
     private readonly projectRepo: Repository<ProjectEntity>
     private readonly userRepo: Repository<UserEntity>
+    private readonly roomRepo: Repository<RoomEntity>
     constructor() {
         this.projectRepo = AppDataSource.getRepository(ProjectEntity)
         this.userRepo = AppDataSource.getRepository(UserEntity)
+        this.roomRepo = AppDataSource.getRepository(RoomEntity)
     }
     async addProject(
         user: string,
         input: CreateProjectDto
     ): Promise<ProjectEntity> {
-        const { key } = input
+        const { key, projectName } = input
 
         // check user valid
         const userValid = await this.userRepo.findOne({
@@ -36,6 +38,9 @@ export class ProjectService implements IProjectService {
             leader: user,
             users: [userValid],
         })
+
+        // create room
+        await this.roomRepo.save({ name: projectName, users: [userValid] })
 
         return newProject
     }
@@ -98,6 +103,15 @@ export class ProjectService implements IProjectService {
         project.users = [...project.users, ...users]
 
         const updated = await this.projectRepo.save(project)
+
+        // update room
+        const room = await this.roomRepo.findOne({
+            where: { name: project.projectName },
+            relations: ['users'],
+        })
+        if (!room) throw new AppError(400, 'Not found this room')
+        room.users = [...room.users, ...users]
+        await this.roomRepo.save(room)
         return updated
     }
     async checkUserExistInProject(projectId: string, email: string) {

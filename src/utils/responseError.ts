@@ -3,7 +3,6 @@ import { HttpCode } from '../../constant'
 import { AppError } from './AppError'
 
 export function responseError(res: Response, err: unknown) {
-    console.log(err)
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({
             status: err.status,

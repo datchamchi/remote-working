@@ -1,4 +1,5 @@
 import {
+    Column,
     Entity,
     JoinTable,
     ManyToMany,
@@ -13,6 +14,12 @@ import { MessageEntity } from './messageEntity'
 export class RoomEntity {
     @PrimaryGeneratedColumn()
     id: number
+
+    @Column({ nullable: true })
+    name: string
+
+    @Column({ default: false })
+    isCalling: boolean
 
     @ManyToMany(() => UserEntity, (user) => user.rooms, { cascade: true })
     @JoinTable({ name: 'room_user' })

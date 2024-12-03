@@ -40,7 +40,6 @@ app.all('*', (req: Request, res: Response) => {
     })
 })
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
-    console.log(error)
     responseError(res, error)
 })
 
