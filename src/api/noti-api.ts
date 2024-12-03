@@ -59,7 +59,6 @@ export async function updateAllInformNotify() {
     );
 
     const response: ResponseSuccess = res.data;
-    console.log(response);
     return response.data;
   } catch (err: unknown) {
     console.log(err);

@@ -44,10 +44,11 @@ import {
 } from "@/components/ui/form";
 import Spinner from "@/ui/Spinner";
 import { useSelector } from "react-redux";
-import { selectAuth } from "../auth/authSlice";
+
 import { format, parse } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { formatDate } from "@/utils/utils";
+import { selectAuth } from "@/app/authSlice";
 const DialogAddTask = ({
   children,
   project,

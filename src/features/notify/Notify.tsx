@@ -17,6 +17,9 @@ const Notify = () => {
   const { data, isSuccess, refetch } = useQuery({
     queryKey: ["get_noti"],
     queryFn: fetchNoti,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 1000,
   });
 
   useEffect(() => {

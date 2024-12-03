@@ -60,7 +60,7 @@ const Information = ({
   }
   return (
     <div className="border-2 border-slate-600 px-4 py-4">
-      <Accordion type="multiple" defaultValue={["overview", "member", "more"]}>
+      <Accordion type="multiple" defaultValue={["overview", "member"]}>
         <div className="py-4">
           <ProjectAnalys listTask={listTask}>
             <Button className="bg-red-500 hover:bg-red-600">View Analys</Button>
@@ -145,9 +145,15 @@ const Information = ({
           <AccordionTrigger>More</AccordionTrigger>
           <AccordionContent>
             <div className="relative text-slate-900">
-              <Button variant={"ghost"} className="border-2 border-slate-800">
-                Delete Project
-              </Button>
+              {project.leader === currentUser.email ? (
+                <Button variant={"ghost"} className="border-2 border-slate-800">
+                  Delete Project
+                </Button>
+              ) : (
+                <Button variant={"ghost"} className="border-2 border-slate-800">
+                  Leave Project
+                </Button>
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>

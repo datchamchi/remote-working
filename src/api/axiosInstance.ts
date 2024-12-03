@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import store from "../app/store";
-import { setAccessToken, setCurrentUser } from "../features/auth/authSlice";
+import { setAccessToken, setCurrentUser } from "@/app/authSlice";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_URL_BACKEND,

@@ -12,7 +12,6 @@ export const TaskSchema = z
   })
   .refine(
     (value) => {
-      console.log(formatDate(value.day, value.time));
       return (
         formatDate(value.day, value.time).getTime() - Date.now() >=
         5 * 1000 * 60
@@ -36,4 +35,5 @@ export type UpdateTaskDto = {
   state?: "todo" | "ongoing" | "done" | "overdue";
   estimate?: Date;
   description?: string;
+  assign?: number;
 };

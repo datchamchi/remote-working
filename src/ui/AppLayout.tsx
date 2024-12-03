@@ -1,12 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
-// import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectAuth,
-  setAccessToken,
-  setCurrentUser,
-} from "../features/auth/authSlice";
 import { useEffect } from "react";
 import {
   connectToSocket,
@@ -14,6 +8,7 @@ import {
   selectSocket,
 } from "@/app/socketSlice";
 import { AppDispatch } from "@/app/store";
+import { selectAuth, setAccessToken, setCurrentUser } from "@/app/authSlice";
 
 const AppLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,10 +20,10 @@ const AppLayout = () => {
   useEffect(() => {
     if (!currentUser && user && accessToken) {
       // neu login thanh cong
+
       dispatch(setAccessToken(accessToken));
       dispatch(setCurrentUser(JSON.parse(user)));
       dispatch(connectToSocket(accessToken));
-      // navigate("/overview");
     }
     return () => {
       if (connectionStatus === "connect") {
@@ -38,12 +33,11 @@ const AppLayout = () => {
   }, [accessToken, user, dispatch, navigate, currentUser, connectionStatus]);
 
   return (
-    <div className="grid grid-cols-6">
-      {/* <Navbar /> */}
-      <div className="col-span-1">
+    <div className="grid h-screen grid-cols-6">
+      <div className="col-span-1 h-screen">
         <Sidebar currentUser={currentUser} />
       </div>
-      <div className="col-span-5 flex h-screen flex-1 px-8 pt-8">
+      <div className="col-span-5 flex h-screen flex-1">
         <Outlet />
       </div>
     </div>

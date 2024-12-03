@@ -13,17 +13,31 @@ import {
 } from "./pages";
 import ErrorPage from "./pages/ErrorPage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuth } from "./features/auth/authSlice";
+
 import { Toaster as Toaster2 } from "./components/ui/sonner";
 import { useEffect } from "react";
 import { receiveSocket } from "./app/socketSlice";
 import { SocketEvent } from "./constant";
 import { AppDispatch } from "./app/store";
+import VideoCall from "./pages/VideoCall";
+import ChatContent from "./features/chat/ChatContent";
+import Profile from "./pages/Profile";
+import { selectAuth } from "./app/authSlice";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        refetchOnMount: false,
+        staleTime: Infinity,
+      },
+    },
+  });
   const user = useSelector(selectAuth).user;
   const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     dispatch(receiveSocket({ event: SocketEvent.USER_NOT_FOUND }));
     dispatch(receiveSocket({ event: SocketEvent.NOTIFY_USER }));
@@ -53,7 +67,11 @@ function App() {
               element={<ProjectDetail />}
             />
             <Route path="/your-tasks" element={<Tasks />} />
-            <Route path="/your-teams" element={<Teams />} />
+            <Route path="/your-teams" element={<Teams />}>
+              <Route path=":roomId" element={<ChatContent />} />
+            </Route>
+            <Route path="/your-teams/:callId/calling" element={<VideoCall />} />
+            <Route path="/your-account" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<PageNotFound />} />

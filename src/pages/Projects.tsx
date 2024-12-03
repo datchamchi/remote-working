@@ -1,4 +1,4 @@
-import { selectAuth } from "@/features/auth/authSlice";
+import { selectAuth } from "@/app/authSlice";
 import { HeaderProject, ListProject } from "@/features/projects";
 import { useSelector } from "react-redux";
 
@@ -7,7 +7,7 @@ const Projects = () => {
 
   if (!currentUser) return;
   return (
-    <div className="flex flex-1 flex-col gap-4 pt-4">
+    <div className="flex flex-1 flex-col gap-4">
       <HeaderProject user={currentUser} />
       <ListProject />
     </div>

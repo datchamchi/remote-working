@@ -15,11 +15,18 @@ import { User } from "@/types/user.type";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AxiosError } from "axios";
-import { Room } from "@/types/room.type";
-const DialogSearchUser = ({ children }: { children: React.ReactNode }) => {
+import { toast } from "sonner";
+const DialogSearchUser = ({
+  children,
+  refetch,
+}: {
+  children: React.ReactNode;
+  refetch: () => void;
+}) => {
   const [searchUser, setSearchUser] = useState("");
   const [listUser, setListUser] = useState<User[]>([]);
   const [listUserInRoom, setListUserInRoom] = useState<number[]>([]);
+  const [message, setMessage] = useState("");
   async function handleSearchUser() {
     try {
       handleReset();
@@ -30,7 +37,11 @@ const DialogSearchUser = ({ children }: { children: React.ReactNode }) => {
         },
       );
       const { data } = res.data as { data: User[] };
-      setListUser(data);
+      if (data.length === 0) setMessage("No user found");
+      else {
+        setMessage("");
+        setListUser(data);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -48,17 +59,21 @@ const DialogSearchUser = ({ children }: { children: React.ReactNode }) => {
   }
   async function handleSubmitCreateRoom() {
     try {
-      const res = await axiosInstance.post(
+      await axiosInstance.post(
         `/api/rooms`,
         { users: listUserInRoom },
         { headers: { "Content-Type": "application/json" } },
       );
-      const { data } = res.data as { data: Room };
-      console.log(data);
+
+      toast.info("Create room successfully");
+      refetch();
     } catch (err) {
       if (err instanceof AxiosError) {
-        const message = err.response?.data;
-        console.log(message);
+        const { message } = err.response?.data as {
+          status: boolean;
+          message: string;
+        };
+        toast.error(message);
       }
     }
   }
@@ -83,8 +98,9 @@ const DialogSearchUser = ({ children }: { children: React.ReactNode }) => {
               Search
             </Button>
           </div>
-          {listUser && listUser.length == 0 ? (
-            <div>No user found</div>
+
+          {message ? (
+            <div>{message}</div>
           ) : (
             listUser.map((user) => (
               <div key={user.id}>
@@ -101,8 +117,12 @@ const DialogSearchUser = ({ children }: { children: React.ReactNode }) => {
           )}
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmitCreateRoom}>
-            Save changes
+          <Button
+            type="submit"
+            onClick={handleSubmitCreateRoom}
+            disabled={listUserInRoom.length === 0}
+          >
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

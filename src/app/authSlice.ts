@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
+import { RootState } from "./store";
 
 export interface AuthState {
   accessToken: string | null;
@@ -7,6 +7,7 @@ export interface AuthState {
     id: number;
     name: string;
     email: string;
+    phone?: string;
     photo: {
       path: string;
     } | null;
@@ -31,6 +32,7 @@ export const authSlice = createSlice({
           id: number;
           name: string;
           email: string;
+          phone: string | undefined;
           photo: { path: string } | null;
         } | null;
       },
@@ -39,11 +41,12 @@ export const authSlice = createSlice({
         state.user = null;
         return;
       }
-      const { id, name, photo, email } = action.payload;
+      const { id, name, photo, email, phone } = action.payload;
       const user = {
         id,
         name,
         email,
+        phone,
         photo,
       };
       state.user = user;

@@ -7,12 +7,12 @@ type NavLinkProps = {
   icon: React.ReactElement;
 };
 const NavLink = ({ name, to, currentPath, icon }: NavLinkProps) => {
-  const isCurrentPage = currentPath === to;
+  const isCurrentPage = currentPath.includes(to);
 
   return (
     <div
       className={`flex h-full items-center pl-2 text-black ${
-        isCurrentPage ? "bg-slate-200 font-medium" : "opacity-75"
+        isCurrentPage ? "bg-blue-200 font-medium" : "opacity-75"
       }`}
     >
       <Link

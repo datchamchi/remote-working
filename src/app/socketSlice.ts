@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import socketClient from "@/socket";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "./store";
@@ -33,9 +34,8 @@ export const disconnectFromSocket = createAsyncThunk(
 
 export const emitSocket = createAsyncThunk(
   "socket/emitSocket",
-  async (payload: { event: string; data: DataType }) => {
+  async (payload: { event: string; data: any }) => {
     try {
-      console.log(payload.event, payload.data);
       await socketClient.emit(payload.event, payload.data);
     } catch (err) {
       console.log(err);
@@ -44,17 +44,61 @@ export const emitSocket = createAsyncThunk(
 );
 export const receiveSocket = createAsyncThunk(
   "socket/receiveSocket",
-  async (payload: { event: string }) => {
+  async (payload: { event: string; refetchData?: () => void }) => {
     try {
-      const { event } = payload;
+      const { event, refetchData } = payload;
       await socketClient.on(event, (data: DataType) => {
         const { content, title } = data;
+        if (refetchData) {
+          setTimeout(refetchData, 2500);
+        }
         toast.info(title, {
+          duration: 2000,
           description: content,
         });
         // if (type) dispatch({ type: `socket/${type}`, payload: data });
       });
       // return response;
+    } catch (err) {
+      console.log(err);
+    }
+  },
+);
+export const receiveSendImageSuccess = createAsyncThunk(
+  "socket/sendImageSuccess",
+  async (payload: { event: string; refetchData?: () => void }) => {
+    const { event, refetchData } = payload;
+    await socketClient.on(event, () => {
+      if (refetchData) refetchData();
+    });
+  },
+);
+export const receiveCallSocket = createAsyncThunk(
+  "socket/receiveCallSocket",
+  async (payload: {
+    event: string;
+    navigate: (url: string) => void;
+    refetchData: () => void;
+  }) => {
+    try {
+      const { event, navigate, refetchData } = payload;
+      let i = 0;
+      socketClient.on(event, (data) => {
+        const { content, title } = data;
+        setTimeout(refetchData, 2500);
+        console.log(i + ": " + event);
+        i++;
+        toast.info(title, {
+          duration: 4000,
+          action: {
+            label: "Join now",
+            onClick: () => {
+              // toast.dismiss(toastId);
+              navigate(`/your-teams/${content}/calling`);
+            },
+          },
+        });
+      });
     } catch (err) {
       console.log(err);
     }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   HiOutlineArrowRightStartOnRectangle,
@@ -57,15 +57,17 @@ const Sidebar = ({ currentUser }: { currentUser: User | null }) => {
   }, [currentPath, listLink]);
 
   return (
-    <div className="h-screen border-slate-200 px-2 py-4 text-sm shadow-md lg:text-base">
-      <div className="flex items-center justify-center gap-5 bg-white py-4 md:justify-start">
-        <Link to="/">
-          <img src={logo} className="w-16" alt="Logo" />
-        </Link>
+    <div className="shadow-b- h-full border-slate-200 px-2 py-4 text-sm shadow-md lg:text-base">
+      <Link
+        to="/"
+        className="flex items-center justify-center gap-5 bg-white py-4 md:justify-start"
+      >
+        <img src={logo} className="w-16" alt="Logo" />
         <span className="hidden font-semibold md:inline-block">
           Remote Work
         </span>
-      </div>
+      </Link>
+
       <div className="space-y-4 py-4">
         {listLink.map(({ name, to, icon }) => (
           <NavLink
@@ -81,4 +83,4 @@ const Sidebar = ({ currentUser }: { currentUser: User | null }) => {
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

@@ -152,7 +152,7 @@ const DialogDetailTask = ({
                 <Input
                   disabled={task.state === "overdue"}
                   type="time"
-                  className="rounded-lg border-2 border-slate-200 px-2 py-1"
+                  className="w-1/3 rounded-lg border-2 border-slate-200 px-2 py-1"
                   defaultValue={time}
                   onChange={(e) => setTime(e.target.value)}
                 />
@@ -168,14 +168,13 @@ const DialogDetailTask = ({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-
                       {day}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={task.estimate}
+                      selected={new Date(task.estimate)}
                       onSelect={(value) => {
                         if (!value) return;
                         setDay(format(value, "dd-MM-yyyy"));
@@ -184,11 +183,6 @@ const DialogDetailTask = ({
                   </PopoverContent>
                 </Popover>
               </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-start">
-                Assignee
-              </Label>
             </div>
             {task.state === "overdue" && (
               <div className="font-semibold text-red-600">

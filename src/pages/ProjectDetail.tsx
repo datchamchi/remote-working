@@ -1,10 +1,11 @@
 import { fetchProject } from "@/api/project-api";
 import { fetchAllTasks } from "@/api/task-api";
+import { selectAuth } from "@/app/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { selectAuth } from "@/features/auth/authSlice";
+
 import {
   HeaderProjectDetail,
   Information,
@@ -47,7 +48,7 @@ const ProjectDetail = () => {
   if (!currentUser) return;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 pt-4">
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-4">
       {isLoading ? (
         <Header path={currentUser.photo?.path}>
           <Skeleton className="h-8 w-1/4" />

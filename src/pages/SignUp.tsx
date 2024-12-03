@@ -22,7 +22,7 @@ const SignUp = () => {
     axios
       .post(
         `${import.meta.env.VITE_URL_BACKEND}${API_SIGNUP}`,
-        { name, email, phoneNumber, password, passwordConfirm },
+        { name, email, phone: phoneNumber, password, passwordConfirm },
         {
           headers: { "Content-Type": "application/json" },
         },

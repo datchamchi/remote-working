@@ -1,14 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  selectAuth,
-  setAccessToken,
-  setCurrentUser,
-} from "../features/auth/authSlice";
 import { HeaderTask, TaskNavigate } from "../features/tasks";
 import { useEffect } from "react";
 import { connectToSocket } from "@/app/socketSlice";
 import { AppDispatch } from "@/app/store";
+import { selectAuth, setAccessToken, setCurrentUser } from "@/app/authSlice";
 
 const Tasks = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,8 +16,6 @@ const Tasks = () => {
     if (!token || !userData) return;
 
     const user = JSON.parse(decodeURIComponent(userData));
-    console.log(user);
-    console.log(token);
     // Save to localStorage
     localStorage.setItem("accessToken", token);
     localStorage.setItem("user", JSON.stringify(user));
@@ -35,7 +29,7 @@ const Tasks = () => {
 
   if (!currentUser) return;
   return (
-    <div className="flex flex-1 flex-col gap-4 pt-4">
+    <div className="flex flex-1 flex-col gap-4">
       <HeaderTask user={currentUser} />
       <TaskNavigate />
     </div>

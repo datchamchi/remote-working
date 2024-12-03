@@ -13,6 +13,7 @@ import { Task } from "@/types/task.type";
 import DialogAddTask from "./DialogAddTask";
 import { Project } from "@/types/project.type";
 import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 const ListTask = ({
   project,
@@ -29,18 +30,42 @@ const ListTask = ({
   function handleCloseDialog() {
     setOpenDialog(false);
   }
+
   function handleOpenDialog() {
     setOpenDialog(true);
   }
+
   useEffect(() => {
     const percentage = Math.floor(
       (listTask.filter((task) => task.state === "done").length /
         listTask.length) *
         100,
     );
+
     const timer = setTimeout(() => setProgress(percentage || 0), 500);
     return () => clearTimeout(timer);
   }, [listTask]);
+
+  const { mutate } = useMutation({
+    mutationFn: async (sorted: string) => {
+      if (sorted === "asignee") {
+        return listTask.sort((task1, task2) =>
+          task1.user.name.localeCompare(task2.user.name),
+        );
+      } else if (sorted === "dueDate") {
+        return listTask.sort(
+          (task1, task2) =>
+            new Date(task1.estimate).getTime() -
+            new Date(task2.estimate).getTime(),
+        );
+      } else if (sorted === "status") {
+        return listTask.sort((task1, task2) =>
+          task1.state.localeCompare(task2.state),
+        );
+      }
+      return listTask;
+    },
+  });
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
@@ -48,14 +73,14 @@ const ListTask = ({
           Project's Tasks
         </span>
         <div className="flex items-center gap-4">
-          <Select>
+          <Select onValueChange={(value) => mutate(value)}>
             <SelectTrigger className="w-[180px] rounded-sm border-2 border-slate-200">
               <SelectValue placeholder="Order by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="created">Created</SelectItem>
+              <SelectItem value="dueDate">Due Date</SelectItem>
               <SelectItem value="status">Status</SelectItem>
-              <SelectItem value="asignee">Asignee</SelectItem>
+              <SelectItem value="asignee">Assignee</SelectItem>
             </SelectContent>
           </Select>
           <DialogAddTask

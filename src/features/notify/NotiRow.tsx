@@ -6,9 +6,9 @@ import { Notify } from "@/types/notify.type";
 import { timeAgo } from "@/utils/utils";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuth } from "../auth/authSlice";
 import { useMutation } from "@tanstack/react-query";
 import { updateInviteNotify } from "@/api/noti-api";
+import { selectAuth } from "@/app/authSlice";
 
 const NotiRow = ({ noti, refetch }: { noti: Notify; refetch: () => void }) => {
   const dispatch = useDispatch<AppDispatch>();

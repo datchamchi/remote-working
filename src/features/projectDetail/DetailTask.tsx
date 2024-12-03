@@ -36,7 +36,7 @@ import { formatDate } from "@/utils/utils";
 import { toast } from "sonner";
 import { Project } from "@/types/project.type";
 import { useSelector } from "react-redux";
-import { selectAuth } from "../auth/authSlice";
+
 import {
   Command,
   CommandEmpty,
@@ -46,6 +46,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { selectAuth } from "@/app/authSlice";
 const DetailTask = ({
   children,
   task,
@@ -67,13 +68,14 @@ const DetailTask = ({
     currentUser?.email === task.user.email ||
     currentUser?.email === project.leader;
   const [username, setUsername] = useState(task.user.name);
-
+  const [userAssignId, setUserAssignId] = useState(task.user.id);
   const { mutate: update, isPending: isUpdating } = useMutation({
     mutationFn: () =>
       updateTask(task.id, {
         description,
         state: taskState,
         estimate: formatDate(day, time),
+        assign: userAssignId,
       }),
     onSuccess: () => {
       refetch();
@@ -242,7 +244,7 @@ const DetailTask = ({
                               key={user.name}
                               value={user.name}
                               onSelect={(currentValue) => {
-                                console.log(currentValue);
+                                setUserAssignId(user.id);
                                 setUsername(currentValue);
                                 setOpenChooseUser(false);
                               }}
@@ -271,11 +273,13 @@ const DetailTask = ({
               </div>
             )}
           </div>
-          {checkTaskPermission && (
-            <DialogFooter>
+          <DialogFooter>
+            {currentUser?.email === task.user.email && (
               <Button onClick={() => handleDeleteTask()}>
                 {isDeleting ? <Spinner h={5} w={5} /> : "Delete"}
               </Button>
+            )}
+            {checkTaskPermission && (
               <Button
                 variant={"destructive"}
                 disabled={task.state === "overdue" || !checkTaskPermission}
@@ -283,8 +287,8 @@ const DetailTask = ({
               >
                 {isUpdating ? <Spinner h={5} w={5} /> : "Save changes"}
               </Button>
-            </DialogFooter>
-          )}
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
