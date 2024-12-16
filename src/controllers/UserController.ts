@@ -10,13 +10,22 @@ export class UserController {
         this.userService = new UserService()
     }
     getAllUserRelate = async (
-        req: Request<object, object, object, { name: string }>,
+        req: Request<
+            object,
+            object,
+            object,
+            { name: string; projectId: number }
+        >,
         res: Response
     ) => {
         const { email } = req
-        const { name } = req.query
+        const { name, projectId } = req.query
         try {
-            const users = await this.userService.getUserRelate(email, name)
+            const users = await this.userService.getUserRelate(
+                email,
+                projectId,
+                name
+            )
 
             res.status(200).json({
                 status: 'success',

@@ -4,11 +4,13 @@ import {
     CreateDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm'
 import { UserEntity } from './userEntity'
 import { ProjectEntity } from './projectEntity'
+import { SubTaskEntity } from './subTaskEntity'
 
 @Entity('task')
 export class TaskEntity extends BaseEntity {
@@ -41,4 +43,7 @@ export class TaskEntity extends BaseEntity {
 
     @ManyToOne(() => ProjectEntity, (project) => project.tasks)
     project: ProjectEntity
+
+    @OneToMany(() => SubTaskEntity, (subtask) => subtask.task)
+    subtasks: SubTaskEntity[]
 }

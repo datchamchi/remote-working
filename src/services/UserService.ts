@@ -18,17 +18,26 @@ export default class UserService {
         const user = await this.userRepository.findOne({ where: { email } })
         return user
     }
-    getUserRelate = async (email: string, name: string | undefined) => {
-        const user = await this.userRepository
-            .createQueryBuilder('user')
-            .innerJoin('user.projects', 'project')
-            .innerJoin('project.users', 'coUser')
-            .where('coUser.email = :email', { email })
-            .andWhere('user.email != :email and user.name LIKE :name', {
-                email,
-                name: `%${name}%`,
-            })
-            .distinct(true)
+    getUserRelate = async (
+        email: string,
+        projectId: number,
+        name: string | undefined
+    ) => {
+        const qb = this.userRepository.createQueryBuilder('user')
+        const user = await qb
+            .where(
+                'user.name NOT IN (' +
+                    qb
+                        .subQuery()
+                        .select('user.name')
+                        .from('user', 'user')
+                        .innerJoin('user.projects', 'project')
+                        .where('project.id = :projectId', { projectId })
+                        .distinct(true)
+                        .getQuery() +
+                    ')'
+            )
+            .andWhere('user.name LIKE :name', { name: `%${name}%` })
             .getMany()
         return user
     }

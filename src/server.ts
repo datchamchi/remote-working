@@ -6,7 +6,7 @@ import 'reflect-metadata'
 import http from 'http'
 
 import { ServerSocket } from './socket'
-import { AppDataSource } from './config'
+import { AppDataSource, sendEmail } from './config'
 import cron from 'node-cron'
 import TaskService from './services/task/TaskService'
 
@@ -14,9 +14,12 @@ const server = http.createServer(app)
 
 new ServerSocket(server)
 
-cron.schedule('1 22 11 * * *', async (time: Date | 'manual' | 'init') => {
+cron.schedule('1 07 21 * * *', async (time: Date | 'manual' | 'init') => {
     const tasks = await TaskService.handleTaskDueTo(new Date(time))
     console.log(tasks)
+    tasks.forEach((task) => {
+        sendEmail(task.user.email, `${task.taskName} will due to in day`)
+    })
 })
 cron.schedule('* * * * *', async (time: Date | 'manual' | 'init') => {
     await TaskService.updateStateOverdueTask(new Date(time))

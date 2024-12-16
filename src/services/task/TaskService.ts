@@ -1,20 +1,28 @@
 import { Repository } from 'typeorm'
-import { ITaskService } from './ITaskService'
-import { ProjectEntity, TaskEntity, UserEntity } from '../../entity'
+
+import {
+    InformNotifyEntity,
+    NotifyEntity,
+    ProjectEntity,
+    TaskEntity,
+    UserEntity,
+} from '../../entity'
 import { AppDataSource } from '../../config'
 import { CreateTaskDto } from '../../dto'
 import { LIMIT_TASK } from '../../../constant'
 import { AppError } from '../../utils'
 import { UpdateTaskDto } from '../../dto/TaskDto'
 
-export default class TaskService implements ITaskService {
+export default class TaskService {
     private readonly taskRepo: Repository<TaskEntity>
     private readonly projectRepo: Repository<ProjectEntity>
     private readonly userRepo: Repository<UserEntity>
+    private readonly notiRepo: Repository<NotifyEntity>
     constructor() {
         this.taskRepo = AppDataSource.getRepository(TaskEntity)
         this.projectRepo = AppDataSource.getRepository(ProjectEntity)
         this.userRepo = AppDataSource.getRepository(UserEntity)
+        this.notiRepo = AppDataSource.getRepository(InformNotifyEntity)
     }
     async getAllTasks(projectId: string): Promise<TaskEntity[]> {
         const tasks = await this.taskRepo
@@ -27,7 +35,7 @@ export default class TaskService implements ITaskService {
             .getMany()
         return tasks
     }
-    async addTask(projectId: string, input: CreateTaskDto) {
+    async addTask(email: string, projectId: string, input: CreateTaskDto) {
         const project = await this.projectRepo.findOne({
             where: { id: Number(projectId) },
             relations: ['tasks', 'users'],
@@ -47,6 +55,12 @@ export default class TaskService implements ITaskService {
             key: `${key}-${count + 1}`,
             state: 'todo',
             project,
+            user: checkUserInProject,
+        })
+        await this.notiRepo.save({
+            content: `${project.projectName}: New Task For You`,
+            from: email,
+            type: 'inform',
             user: checkUserInProject,
         })
         return task
@@ -126,12 +140,13 @@ export default class TaskService implements ITaskService {
         const overdueTasks = await AppDataSource.getRepository(TaskEntity)
             .createQueryBuilder('task')
             .where(
-                'DAY(task.estimate) =:day and MONTH(task.estimate) = :month and YEAR(task.estimate)= :year and task.state <> :status',
+                'DAY(task.estimate) =:day and MONTH(task.estimate) = :month and YEAR(task.estimate)= :year and task.state != :status and task.state != :status2',
                 {
                     day: dueDate.getDate(),
                     month: dueDate.getMonth() + 1,
                     year: dueDate.getFullYear(),
                     status: 'done',
+                    status2: 'overdue',
                 }
             )
             .innerJoinAndSelect('task.user', 'user')
@@ -148,5 +163,12 @@ export default class TaskService implements ITaskService {
             )
             .set({ state: 'overdue' })
             .execute()
+    }
+    async getTask(taskKey: string) {
+        const task = await this.taskRepo.findOne({
+            where: { key: taskKey },
+            relations: ['subtasks'],
+        })
+        return task
     }
 }

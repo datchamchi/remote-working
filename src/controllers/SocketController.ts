@@ -33,6 +33,7 @@ export class SocketController {
         const { email, id } = client
         // check if user exist
         const user = this.connectedUsers.find((user) => user.email === email)
+
         if (user) user.socketId = id
         else this.connectedUsers.push({ email, socketId: id })
         client.on(SocketEvent.INVITE_OTHER, this.handleInvitation(client))
@@ -50,80 +51,85 @@ export class SocketController {
     }
 
     private readonly handleInvitation =
-        (client: Socket) => async (data: DataType) => {
-            const { to, content, type, from, project } = data
-            try {
-                // check user exist in project
-                if (!project) return
-                await this.projectService.checkUserExistInProject(project, to)
-
-                // check Email Exist in system
-                const user = await this.userService.getUserByEmail(to)
-                const responseUserNotFound: DataType = {
-                    type: 'inform',
-                    title: user ? 'Invitation sent' : 'Invitation fail',
-                    from: 'Remote Working',
-                    to: from,
-                    content: user
-                        ? `Wating ${to} accpept`
-                        : `${to} is not currently`,
-                }
-                this.io
-                    .to(client.id)
-                    .emit(SocketEvent.USER_NOT_FOUND, responseUserNotFound)
-                if (!user) return
-
-                // mailtrapClient
-                //     .send({
-                //         from: sender,
-                //         to: [{ email: to }],
-                //         subject: 'Invitation',
-                //         text: content,
-                //     })
-                //     .then(() => {
-                //         console.log('send email successfully')
-                //     })
-                //     .catch((err) => console.log(err))
-                // if invited user online ,send notify
-
-                const invitedUserOnline = this.connectedUsers.find(
-                    (user) => user.email === to
-                )
-
-                // if user exist create notify inform to invited person
-                await this.notifyService.addNotify({
-                    content,
-                    type,
-                    from,
-                    to,
-                    project,
-                })
-
-                if (invitedUserOnline) {
-                    const invitation: DataType = {
-                        content,
-                        type: 'invite',
-                        from: to,
-                        to: from,
+        (client: Socket) =>
+        async (data: {
+            type: 'inform' | 'invite'
+            title?: string
+            content: string
+            from: string
+            to: string[]
+            project?: string
+        }) => {
+            const { to: emails, content, type, from, project } = data
+            // check user exist in project
+            if (!project) return
+            emails.forEach(async (to) => {
+                try {
+                    await this.projectService.checkUserExistInProject(
                         project,
+                        to
+                    )
+
+                    // check Email Exist in system
+                    const user = await this.userService.getUserByEmail(to)
+                    const responseUserNotFound: DataType = {
+                        type: 'inform',
+                        title: 'Invitation fail',
+                        from: 'Remote Working',
+                        to: from,
+                        content: `${to} is not currently`,
                     }
-                    this.io
-                        .to(invitedUserOnline.socketId)
-                        .emit(SocketEvent.NOTIFY_USER, invitation)
-                }
-            } catch (err) {
-                if (err instanceof AppError) {
-                    return this.io.to(client.id).emit('error', {
-                        title: err.status,
-                        content: err.messages,
+                    if (!user) {
+                        return this.io
+                            .to(client.id)
+                            .emit(
+                                SocketEvent.USER_NOT_FOUND,
+                                responseUserNotFound
+                            )
+                    }
+
+                    const invitedUserOnline = this.connectedUsers.find(
+                        (user) => user.email === to
+                    )
+
+                    // if user exist create notify inform to invited person
+                    await this.notifyService.addNotify({
+                        content,
+                        type,
+                        from,
+                        to,
+                        project,
                     })
+
+                    if (invitedUserOnline) {
+                        const invitation: DataType = {
+                            content,
+                            type: 'invite',
+                            from: to,
+                            to: from,
+                            project,
+                        }
+                        this.io
+                            .to(invitedUserOnline.socketId)
+                            .emit(SocketEvent.NOTIFY_USER, invitation)
+                    }
+                } catch (err) {
+                    if (err instanceof AppError) {
+                        return this.io.to(client.id).emit('error', {
+                            title: err.status,
+                            content: err.messages,
+                        })
+                    }
                 }
-                const error: ErrorType = {
-                    title: 'Error',
-                    content: `Cannot invite this user ${to}`,
-                }
-                this.io.to(client.id).emit('error', error)
+            })
+            const response = {
+                type: 'inform',
+                title: 'Invitation sent',
+                from: 'Remote Working',
+                to: from,
+                content: `Wating ${emails.join(' and ')} accpept`,
             }
+            this.io.to(client.id).emit(SocketEvent.INVITE_OTHER, response)
         }
     private readonly acceptInvite =
         (client: Socket) => async (data: DataType) => {

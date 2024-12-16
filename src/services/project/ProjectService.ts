@@ -126,4 +126,45 @@ export class ProjectService implements IProjectService {
 
         if (userExist) throw new AppError(400, `${email} exist in project`)
     }
+
+    async analysProject(projectId: string, type: string) {
+        const project = await this.projectRepo.findOne({
+            where: { id: Number(projectId) },
+            relations: ['tasks', 'tasks.user'],
+        })
+        if (!project) throw new AppError(400, 'Project not found')
+        switch (type) {
+            case 'all': {
+                return project.tasks
+            }
+            case 'week': {
+                const startOfWeek = new Date()
+                const endOfWeek = new Date()
+                const dayOfWeek = startOfWeek.getDay()
+
+                startOfWeek.setHours(0, 0, 0, 0)
+                startOfWeek.setDate(startOfWeek.getDate() - dayOfWeek + 1)
+
+                endOfWeek.setHours(0, 0, 0, 0)
+                endOfWeek.setDate(endOfWeek.getDate() + (8 - dayOfWeek))
+
+                return project.tasks.filter(
+                    (task) =>
+                        new Date(task.createdAt) >= startOfWeek &&
+                        new Date(task.createdAt) < endOfWeek
+                )
+            }
+            case 'month': {
+                const thisMonth = new Date().getMonth()
+                const thisYear = new Date().getFullYear()
+                return project.tasks.filter(
+                    (task) =>
+                        new Date(task.createdAt).getMonth() == thisMonth &&
+                        new Date(task.createdAt).getFullYear() == thisYear
+                )
+            }
+            default:
+                throw new AppError(400, 'Bad Request')
+        }
+    }
 }

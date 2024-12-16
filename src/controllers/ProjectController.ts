@@ -115,4 +115,24 @@ export class ProjectController {
             responseError(res, err)
         }
     }
+
+    analysProject = async (
+        req: Request<{ projectId: string }, object, object, { type: string }>,
+        res: Response
+    ) => {
+        const { projectId } = req.params
+        const { type } = req.query
+        try {
+            const tasks = await this.projectService.analysProject(
+                projectId,
+                type
+            )
+            res.status(200).json({
+                status: 'success',
+                data: tasks,
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
 }

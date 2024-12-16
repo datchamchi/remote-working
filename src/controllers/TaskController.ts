@@ -42,6 +42,7 @@ export class TaskController {
                 })
             validateRequest(TaskSchema)(req.body)
             const task = await this.taskService.addTask(
+                email,
                 req.params.projectId,
                 req.body
             )
@@ -146,6 +147,19 @@ export class TaskController {
             res.status(201).json({
                 status: 'success',
                 message: 'Delete Task Successfully',
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
+    getTask = async (req: Request<{ taskKey: string }>, res: Response) => {
+        const { taskKey } = req.params
+
+        try {
+            const task = await this.taskService.getTask(taskKey)
+            res.status(200).json({
+                status: 'success',
+                data: task,
             })
         } catch (err) {
             responseError(res, err)
