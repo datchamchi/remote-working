@@ -19,19 +19,20 @@ import photo from "./../../assets/images/default.jpg";
 import { User } from "@/types/user.type";
 import { Button } from "@/components/ui/button";
 import { HiOutlinePaperAirplane } from "react-icons/hi2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { emitSocket } from "@/app/socketSlice";
 import { SocketEvent } from "@/constant";
 import { AppDispatch } from "@/app/store";
 import { format } from "date-fns";
-import ProjectAnalys from "./ProjectAnalys";
+
 import { Task } from "@/types/task.type";
+import DialogSearchUser from "./DialogSearchUser";
+import { Link } from "react-router-dom";
 
 const Information = ({
   project,
   currentUser,
-  listTask,
 }: {
   project: Project;
   currentUser: User;
@@ -39,12 +40,27 @@ const Information = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [openInputInvite, setOpenInputInvite] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [emailInvite, setEmailInvite] = useState("");
   const listMember = project.users.filter(
     (user) => user.email !== currentUser.email,
   );
-
-  function handleSendInvite() {
+  function handleToggleDialog() {
+    setOpenDialog(!openDialog);
+  }
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (openInputInvite && event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        setOpenDialog(true);
+      } else return;
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [openInputInvite]);
+  function handleSendInvite(to: string[]) {
     dispatch(
       emitSocket({
         event: SocketEvent.INVITE_OTHER,
@@ -52,7 +68,7 @@ const Information = ({
           type: "invite",
           content: `${currentUser.name} invite you join project ${project.projectName}`,
           from: currentUser.email,
-          to: emailInvite,
+          to,
           project: project.key,
         },
       }),
@@ -60,11 +76,20 @@ const Information = ({
   }
   return (
     <div className="border-2 border-slate-600 px-4 py-4">
+      <DialogSearchUser
+        projectId={project.id}
+        openDialog={openDialog}
+        handleToggleDialog={handleToggleDialog}
+        handleSendInvite={handleSendInvite}
+      />
+
       <Accordion type="multiple" defaultValue={["overview", "member"]}>
         <div className="py-4">
-          <ProjectAnalys listTask={listTask}>
-            <Button className="bg-red-500 hover:bg-red-600">View Analys</Button>
-          </ProjectAnalys>
+          <Button className="bg-red-500 hover:bg-red-600">
+            <Link to={"analys"} state={{ project: project }}>
+              View Analys
+            </Link>
+          </Button>
         </div>
 
         <AccordionItem value="member">
@@ -89,7 +114,6 @@ const Information = ({
               ))}
             </div>
             <div className="mb-4 mt-4">
-              {/* {listMember.length === 0 && "No member"} */}
               {listMember.length <= 2
                 ? listMember.map((user) => `${user.name}`).join(" and ")
                 : `${listMember[0].name} and ${listMember.length - 1} others people`}
@@ -102,14 +126,14 @@ const Information = ({
                 {openInputInvite && (
                   <div className="relative mx-2">
                     <Input
-                      placeholder="Enter email"
+                      placeholder="Enter email or Ctrl + K "
                       value={emailInvite}
                       onChange={(e) => setEmailInvite(e.target.value)}
                     />
                     {emailInvite && (
                       <HiOutlinePaperAirplane
                         className="absolute bottom-1/3 right-4 cursor-pointer"
-                        onClick={handleSendInvite}
+                        onClick={() => handleSendInvite([emailInvite])}
                       />
                     )}
                   </div>

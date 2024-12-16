@@ -14,6 +14,8 @@ import DialogAddTask from "./DialogAddTask";
 import { Project } from "@/types/project.type";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import { selectAuth } from "@/app/authSlice";
 
 const ListTask = ({
   project,
@@ -26,7 +28,7 @@ const ListTask = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-
+  const currentUser = useSelector(selectAuth).user;
   function handleCloseDialog() {
     setOpenDialog(false);
   }
@@ -83,21 +85,23 @@ const ListTask = ({
               <SelectItem value="asignee">Assignee</SelectItem>
             </SelectContent>
           </Select>
-          <DialogAddTask
-            project={project}
-            refetch={refetch}
-            openDialog={openDialog}
-            closeDialog={handleCloseDialog}
-          >
-            <Button
-              onClick={handleOpenDialog}
-              variant={"ghost"}
-              className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-500 hover:text-white"
+          {currentUser?.email === project.leader && (
+            <DialogAddTask
+              project={project}
+              refetch={refetch}
+              openDialog={openDialog}
+              closeDialog={handleCloseDialog}
             >
-              <span>Add task</span>
-              <HiMiniPlusSmall className="text-xl" />
-            </Button>
-          </DialogAddTask>
+              <Button
+                onClick={handleOpenDialog}
+                variant={"ghost"}
+                className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-500 hover:text-white"
+              >
+                <span>Add task</span>
+                <HiMiniPlusSmall className="text-xl" />
+              </Button>
+            </DialogAddTask>
+          )}
         </div>
       </div>
       {listTask.length !== 0 ? (

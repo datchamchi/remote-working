@@ -21,6 +21,22 @@ export async function fetchAllTasks(projectId: string): Promise<Task[]> {
   }
 }
 
+export async function fetchTask(taskKey: string | undefined): Promise<Task> {
+  try {
+    const res = await axiosInstance.get(`/api/tasks/${taskKey}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    const response: ResponseSuccess = res.data;
+    return response.data;
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      const response: ResponseError = err.response?.data;
+      throw new Error(response.message.toString() || "An error occurred");
+    } else {
+      throw new Error("Unexpected error occurred");
+    }
+  }
+}
 export async function addTask(input: CreateTaskDto): Promise<Task[]> {
   try {
     const res = await axiosInstance.post(

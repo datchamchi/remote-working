@@ -5,9 +5,12 @@ import AppLayout from "./ui/AppLayout";
 import {
   Login,
   PageNotFound,
+  Profile,
+  ProjectAnalys,
   ProjectDetail,
   Projects,
   SignUp,
+  SubTaskPage,
   Tasks,
   Teams,
 } from "./pages";
@@ -21,7 +24,7 @@ import { SocketEvent } from "./constant";
 import { AppDispatch } from "./app/store";
 import VideoCall from "./pages/VideoCall";
 import ChatContent from "./features/chat/ChatContent";
-import Profile from "./pages/Profile";
+
 import { selectAuth } from "./app/authSlice";
 
 function App() {
@@ -42,8 +45,8 @@ function App() {
     dispatch(receiveSocket({ event: SocketEvent.USER_NOT_FOUND }));
     dispatch(receiveSocket({ event: SocketEvent.NOTIFY_USER }));
     dispatch(receiveSocket({ event: SocketEvent.ERROR }));
-    dispatch(receiveSocket({ event: SocketEvent.ACCPEPT_INVITE }));
     dispatch(receiveSocket({ event: SocketEvent.REFUSE_INVITE }));
+    dispatch(receiveSocket({ event: SocketEvent.INVITE_OTHER }));
   }, [dispatch]);
   return (
     <QueryClientProvider client={queryClient}>
@@ -66,7 +69,12 @@ function App() {
               path="/your-projects/:projectId"
               element={<ProjectDetail />}
             />
+            <Route
+              path="/your-projects/:projectId/analys"
+              element={<ProjectAnalys />}
+            />
             <Route path="/your-tasks" element={<Tasks />} />
+            <Route path="/your-tasks/:taskKey" element={<SubTaskPage />} />
             <Route path="/your-teams" element={<Teams />}>
               <Route path=":roomId" element={<ChatContent />} />
             </Route>

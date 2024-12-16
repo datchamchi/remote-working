@@ -7,7 +7,7 @@ type NavLinkProps = {
   icon: React.ReactElement;
 };
 const NavLink = ({ name, to, currentPath, icon }: NavLinkProps) => {
-  const isCurrentPage = currentPath.includes(to);
+  const isCurrentPage = currentPath.includes(to.split("?")[0]);
 
   return (
     <div

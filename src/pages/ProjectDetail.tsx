@@ -1,10 +1,13 @@
 import { fetchProject } from "@/api/project-api";
 import { fetchAllTasks } from "@/api/task-api";
 import { selectAuth } from "@/app/authSlice";
+import { receiveSocket } from "@/app/socketSlice";
+import { AppDispatch } from "@/app/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SocketEvent } from "@/constant";
 
 import {
   HeaderProjectDetail,
@@ -14,14 +17,20 @@ import {
 } from "@/features/projectDetail";
 import Header from "@/ui/Header";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useParams } from "react-router-dom";
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const { data, isLoading, isSuccess } = useQuery({
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    data,
+    isLoading,
+    isSuccess,
+    refetch: refetchProject,
+  } = useQuery({
     queryKey: ["project", projectId],
     queryFn: async () => {
       if (!projectId) throw new Error("Project ID is required");
@@ -45,10 +54,20 @@ const ProjectDetail = () => {
   });
   const currentUser = useSelector(selectAuth).user;
   const [changeDescription, setChangeDescription] = useState(false);
+
+  useEffect(() => {
+    dispatch(
+      receiveSocket({
+        event: SocketEvent.ACCPEPT_INVITE,
+        refetchData: refetchProject,
+      }),
+    );
+  }, [dispatch, refetchProject]);
+
   if (!currentUser) return;
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-4">
+    <div className="flex flex-1 flex-col gap-4 px-4">
       {isLoading ? (
         <Header path={currentUser.photo?.path}>
           <Skeleton className="h-8 w-1/4" />

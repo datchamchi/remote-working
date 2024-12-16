@@ -16,8 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Link, useSearchParams } from "react-router-dom";
-import DialogDetailTask from "./DialogDetailTask";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllTasksByUser, fetchTotalTaskPage } from "@/api/task-api";
 import { format } from "date-fns";
@@ -33,7 +32,6 @@ const TaskTable = () => {
     data: tasks = [],
     isFetching,
     isSuccess,
-    refetch,
   } = useQuery({
     queryKey: ["get_all_task", { page: currentPage, time, type }],
     queryFn: () => fetchAllTasksByUser(currentPage, time, type),
@@ -42,6 +40,7 @@ const TaskTable = () => {
     queryKey: ["get_total_task_page", time, type],
     queryFn: () => fetchTotalTaskPage(time, type),
   });
+  const navigate = useNavigate();
   if (isFetching) return <TaskTableSkeleton />;
 
   return (
@@ -92,11 +91,14 @@ const TaskTable = () => {
                 <TableCell>{task.project.projectName}</TableCell>
                 <TableCell>
                   <div className="flex gap-4">
-                    <DialogDetailTask task={task} refetch={refetch}>
-                      <Button variant={"link"} className="bg-red-100">
-                        Detail
-                      </Button>
-                    </DialogDetailTask>
+                    <Button
+                      variant={"link"}
+                      className="bg-red-100"
+                      onClick={() => navigate(`${task.key}`)}
+                    >
+                      Detail
+                    </Button>
+
                     <Button variant={"link"} className="bg-green-100" asChild>
                       <Link to={`/your-projects/${task.project.id}`}>
                         View project

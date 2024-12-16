@@ -7,31 +7,28 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { User } from "@/types/user.type";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AxiosError } from "axios";
-import { toast } from "sonner";
-const DialogSearchUser = ({
-  children,
-  refetch,
-}: {
-  children: React.ReactNode;
-  refetch: () => void;
+
+const DialogSearchUser = (props: {
+  projectId: number | undefined;
+  openDialog: boolean;
+  handleToggleDialog: () => void;
+  handleSendInvite: (to: string[]) => void;
 }) => {
+  const { handleSendInvite, handleToggleDialog, openDialog, projectId } = props;
   const [searchUser, setSearchUser] = useState("");
   const [listUser, setListUser] = useState<User[]>([]);
-  const [listUserInRoom, setListUserInRoom] = useState<number[]>([]);
+  const [listUserInRoom, setListUserInRoom] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   async function handleSearchUser() {
     try {
       handleReset();
       const res = await axiosInstance.get(
-        `/api/users/user-relate?name=${searchUser}`,
+        `/api/users/user-relate?projectId=${projectId}&&name=${searchUser}`,
         {
           headers: { "Content-Type": "application/json" },
         },
@@ -46,7 +43,7 @@ const DialogSearchUser = ({
       console.log(err);
     }
   }
-  const handleCheckboxChange = (value: number) => {
+  const handleCheckboxChange = (value: string) => {
     setListUserInRoom((prevState) =>
       prevState.includes(value)
         ? prevState.filter((item) => item !== value)
@@ -57,42 +54,27 @@ const DialogSearchUser = ({
     setListUser([]);
     setListUserInRoom([]);
   }
-  async function handleSubmitCreateRoom() {
-    try {
-      await axiosInstance.post(
-        `/api/rooms`,
-        { users: listUserInRoom },
-        { headers: { "Content-Type": "application/json" } },
-      );
-
-      toast.info("Create room successfully");
-      refetch();
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        const { message } = err.response?.data as {
-          status: boolean;
-          message: string;
-        };
-        toast.error(message);
-      }
-    }
+  function handleSubmit() {
+    handleSendInvite(listUserInRoom);
   }
   return (
-    <Dialog onOpenChange={handleReset}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={openDialog} onOpenChange={handleReset}>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        closeDialog={handleToggleDialog}
+      >
         <DialogHeader>
-          <DialogTitle>Create New Room</DialogTitle>
-          <DialogDescription>Find others in your teams</DialogDescription>
+          <DialogTitle>Search</DialogTitle>
+          <DialogDescription>Find others to invite to team</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Input
               id="name"
-              value={searchUser}
+              defaultValue={searchUser}
               onChange={(e) => setSearchUser(e.target.value)}
               placeholder="Enter username here"
-              className="col-span-3"
+              className="col-span-3 border-slate-500"
             />
             <Button variant={"destructive"} onClick={handleSearchUser}>
               Search
@@ -102,27 +84,33 @@ const DialogSearchUser = ({
           {message ? (
             <div>{message}</div>
           ) : (
-            listUser.map((user) => (
-              <div key={user.id}>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={String(user.id)}
-                    value={String(user.id)}
-                    onCheckedChange={() => handleCheckboxChange(user.id)}
-                  />
-                  <Label>{user.name}</Label>
+            <div className="mmin-h-40 max-h-64 divide-y-2 overflow-auto">
+              {listUser.map((user) => (
+                <div key={user.id} className="py-2">
+                  <div className="flex h-10 items-center space-x-2">
+                    <Checkbox
+                      id={String(user.id)}
+                      value={String(user.id)}
+                      onCheckedChange={() => handleCheckboxChange(user.email)}
+                    />
+                    <div>
+                      <p className="text-primary">{user.name}</p>
+                      <p className="text-[12px]">{user.email}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
         <DialogFooter>
           <Button
             type="submit"
-            onClick={handleSubmitCreateRoom}
+            onClick={handleSubmit}
             disabled={listUserInRoom.length === 0}
           >
-            Save
+            Invite{" "}
+            {listUserInRoom.length > 1 ? `${listUserInRoom.length} others` : ""}
           </Button>
         </DialogFooter>
       </DialogContent>

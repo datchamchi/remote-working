@@ -6,6 +6,10 @@ import SignUp from "./SignUp";
 import Tasks from "./Tasks";
 import Teams from "./Teams";
 import ProjectDetail from "./ProjectDetail";
+import ProjectAnalys from "./ProjectAnalys";
+import SubTaskPage from "./SubTaskPage";
+import Profile from "./Profile";
+
 export {
   AppError,
   PageNotFound,
@@ -15,4 +19,7 @@ export {
   Tasks,
   Teams,
   ProjectDetail,
+  ProjectAnalys,
+  SubTaskPage,
+  Profile,
 };
