@@ -1,7 +1,7 @@
 import { Room } from "@/types/room.type";
 import React from "react";
 
-import { HiInformationCircle, HiPhone, HiVideoCamera } from "react-icons/hi2";
+import { HiInformationCircle, HiVideoCamera } from "react-icons/hi2";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "@/app/store";
@@ -42,9 +42,6 @@ const InforRoom = ({ room }: { room: Room | undefined }) => {
         )}
       </div>
       <div className="col-start-3 col-end-4 flex items-center gap-6 justify-self-center text-2xl text-primary">
-        <div className="cursor-pointer rounded-full p-2 hover:bg-slate-300">
-          <HiPhone />
-        </div>
         <div
           className="cursor-pointer rounded-full p-2 hover:bg-slate-300"
           onClick={handleClickCalling}

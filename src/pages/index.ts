@@ -9,8 +9,9 @@ import ProjectDetail from "./ProjectDetail";
 import ProjectAnalys from "./ProjectAnalys";
 import SubTaskPage from "./SubTaskPage";
 import Profile from "./Profile";
-
+import TaskDetailPage from "./TaskDetail";
 export {
+  TaskDetailPage,
   AppError,
   PageNotFound,
   Projects,

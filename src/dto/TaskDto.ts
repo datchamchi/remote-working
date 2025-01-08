@@ -6,6 +6,7 @@ export const TaskSchema = z
     taskName: z.string().min(1, "Missing field: task name"),
     description: string().min(1, "Missing field: task description"),
     day: z.string({ required_error: "Missing field: day" }),
+
     time: z.string({ required_error: "Missing field: time" }),
 
     assign: z.number({ required_error: "Missing field : user id" }),

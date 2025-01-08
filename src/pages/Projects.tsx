@@ -9,7 +9,9 @@ const Projects = () => {
   return (
     <div className="flex flex-1 flex-col gap-4">
       <HeaderProject user={currentUser} />
-      <ListProject />
+      <div className="space-y-4 px-4">
+        <ListProject />
+      </div>
     </div>
   );
 };

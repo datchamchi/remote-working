@@ -1,45 +1,24 @@
-import { ResponseError, ResponseSuccess } from "@/types/response.type";
+import { SubTask } from "@/types/subTask.type";
 import axiosInstance from "./axiosInstance";
+import { ResponseError, ResponseSuccess } from "@/types/response.type";
 import { AxiosError } from "axios";
-import { Notify } from "@/types/notify.type";
 
-export async function fetchNoti(): Promise<Notify[]> {
+export async function addSubTask(input: {
+  taskKey: string;
+  name: string;
+}): Promise<SubTask> {
   try {
-    const res = await axiosInstance.get(`/api/notify`, {
-      headers: { "Content-Type": "application/json" },
-    });
-    const response: ResponseSuccess = res.data;
-    return response.data;
-  } catch (err: unknown) {
-    console.log(err);
-    if (err instanceof AxiosError) {
-      const response: ResponseError = err.response?.data;
-      throw new Error(response.message.toString() || "An error occurred");
-    } else {
-      throw new Error("Unexpected error occurred");
-    }
-  }
-}
-export async function updateInviteNotify(input: {
-  notifyId: string;
-  type: string;
-}) {
-  const { notifyId, type } = input;
-  try {
-    const res = await axiosInstance.patch(
-      `/api/notify/${notifyId}`,
-      {
-        type,
-      },
+    const { name, taskKey } = input;
+    const res = await axiosInstance.post(
+      `/api/tasks/${taskKey}/subtasks`,
+      { name },
       {
         headers: { "Content-Type": "application/json" },
       },
     );
-
     const response: ResponseSuccess = res.data;
     return response.data;
   } catch (err: unknown) {
-    console.log(err);
     if (err instanceof AxiosError) {
       const response: ResponseError = err.response?.data;
       throw new Error(response.message.toString() || "An error occurred");
@@ -48,20 +27,26 @@ export async function updateInviteNotify(input: {
     }
   }
 }
-export async function updateAllInformNotify() {
+
+export async function updateSubTask(input: {
+  taskKey: string;
+  subTaskId: number;
+  name: string;
+  status: string;
+}): Promise<SubTask> {
   try {
+    console.log(input);
+    const { subTaskId, name, status, taskKey } = input;
     const res = await axiosInstance.patch(
-      `/api/notify/readall`,
-      {},
+      `/api/tasks/${taskKey}/subtasks/${subTaskId}`,
+      { name, status },
       {
         headers: { "Content-Type": "application/json" },
       },
     );
-
     const response: ResponseSuccess = res.data;
     return response.data;
   } catch (err: unknown) {
-    console.log(err);
     if (err instanceof AxiosError) {
       const response: ResponseError = err.response?.data;
       throw new Error(response.message.toString() || "An error occurred");
@@ -71,22 +56,21 @@ export async function updateAllInformNotify() {
   }
 }
 
-export async function addNoti(dto: {
-  content: string;
-  type: "invite" | "inform";
-  from: string;
-  to: string;
-  project?: string | undefined;
-}) {
+export async function deleteSubTask(input: {
+  taskKey: string;
+  subTaskId: number;
+}): Promise<SubTask> {
   try {
-    const res = await axiosInstance.post(`/api/notify`, dto, {
-      headers: { "Content-Type": "application/json" },
-    });
-
+    const { subTaskId, taskKey } = input;
+    const res = await axiosInstance.delete(
+      `/api/tasks/${taskKey}/subtasks/${subTaskId}`,
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     const response: ResponseSuccess = res.data;
     return response.data;
   } catch (err: unknown) {
-    console.log(err);
     if (err instanceof AxiosError) {
       const response: ResponseError = err.response?.data;
       throw new Error(response.message.toString() || "An error occurred");

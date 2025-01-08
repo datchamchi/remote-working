@@ -2,7 +2,6 @@ import { fetchAllProject } from "@/api/project-api";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -46,7 +45,6 @@ export default function ListProject() {
         </Button>
       </DialogAddProject>
       <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="text-black">Name</TableHead>
@@ -69,13 +67,18 @@ export default function ListProject() {
                 <TableCell>{project.key}</TableCell>
                 <TableCell>{project.leader}</TableCell>
                 <TableCell className="">
-                  {timeAgo(new Date(project.createdAt))}
+                  {timeAgo(new Date(project.createdAt), new Date())}
                 </TableCell>
                 <TableCell>{project.description}</TableCell>
               </TableRow>
             ))}
         </TableBody>
       </Table>
+      {isSuccess && data.length == 0 && (
+        <div className="text-center text-sm font-semibold text-primary">
+          You are not in any project
+        </div>
+      )}
     </>
   );
 }

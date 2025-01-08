@@ -3,7 +3,6 @@ import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRoom } from "@/api/room-api";
-import ChatSkeleton from "./ChatSkeleton";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/app/store";
@@ -18,7 +17,7 @@ const ChatContent = () => {
   const { roomId: currentRoom } = useParams<"roomId">();
   const {
     data: room,
-    isFetching,
+    // isFetching,
     refetch,
   } = useQuery({
     queryKey: ["fetch_room", currentRoom],
@@ -55,23 +54,23 @@ const ChatContent = () => {
     );
   }, [dispatch, refetch]);
 
-  if (isFetching) return <ChatSkeleton />;
-  return (
-    <div className="flex h-full flex-col">
-      <div>
-        <InforRoom room={room} />
+  if (room)
+    return (
+      <div className="flex h-full flex-col">
+        <div>
+          <InforRoom room={room} />
+        </div>
+        <div className="h-[500px]">
+          <Message messages={messages} />
+        </div>
+        <div className="mb-2 mt-auto">
+          <MessageInput
+            currentRoom={Number(currentRoom)}
+            handleAddMessage={handleAddMessage}
+          />
+        </div>
       </div>
-      <div className="h-[500px]">
-        <Message messages={messages} />
-      </div>
-      <div className="mb-2 mt-auto">
-        <MessageInput
-          currentRoom={Number(currentRoom)}
-          handleAddMessage={handleAddMessage}
-        />
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ChatContent;

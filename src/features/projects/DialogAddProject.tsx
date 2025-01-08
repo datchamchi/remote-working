@@ -25,6 +25,7 @@ import { formSchema } from "@/dto/ProjectDto";
 import { useMutation } from "@tanstack/react-query";
 import { addProject } from "@/api/project-api";
 import Spinner from "@/ui/Spinner";
+import { toast } from "sonner";
 
 const DialogAddProject = ({
   children,
@@ -57,6 +58,7 @@ const DialogAddProject = ({
     onSuccess: () => {
       handleReset();
       handleClose();
+      toast.success("Create Project Successfully");
       refetch();
     },
     onError: (error) => {

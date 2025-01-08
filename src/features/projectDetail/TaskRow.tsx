@@ -2,26 +2,32 @@ import { Task } from "@/types/task.type";
 
 import defaultPhoto from "../../assets/images/default.jpg";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import DetailTask from "./DetailTask";
-import { Project } from "@/types/project.type";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useNavigate } from "react-router-dom";
+import { Project } from "@/types/project.type";
+import { useSelector } from "react-redux";
+import { selectAuth } from "@/app/authSlice";
 
-const TaskRow = ({
-  task,
-  refetch,
-  project,
-}: {
-  task: Task;
-  project: Project;
-  refetch: () => void;
-}) => {
+const TaskRow = ({ task, project }: { task: Task; project: Project }) => {
+  const currentUser = useSelector(selectAuth).user;
+  const navigate = useNavigate();
   return (
-    <DetailTask task={task} refetch={refetch} project={project}>
+    <div
+      onClick={() => {
+        if (currentUser?.email !== task.user.email) {
+          navigate(`${task.key}`, {
+            state: {
+              project: project,
+            },
+          });
+        } else navigate(`/your-tasks/${task.key}`);
+      }}
+    >
       <div className="flex cursor-pointer items-center px-4 py-2 font-medium hover:bg-slate-200">
         <div className="min-w-20 text-sm font-semibold">{task.key}</div>
 
@@ -48,7 +54,7 @@ const TaskRow = ({
           </div>
         </div>
       </div>
-    </DetailTask>
+    </div>
   );
 };
 

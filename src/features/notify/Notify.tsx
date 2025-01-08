@@ -65,7 +65,11 @@ const Notify = () => {
         <div className="divide-y-2 text-sm">
           {isSuccess &&
             data.map((noti) => (
-              <NotiRow noti={noti} key={noti.id} refetch={refetch} />
+              <NotiRow
+                noti={noti}
+                key={noti.type + " " + noti.id}
+                refetch={refetch}
+              />
             ))}
         </div>
       </PopoverContent>

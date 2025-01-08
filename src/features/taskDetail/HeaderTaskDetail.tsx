@@ -6,35 +6,49 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Project } from "@/types/project.type";
 
 import { User } from "@/types/user.type";
 import Header from "@/ui/Header";
 
-const HeaderSubTask = ({
+const HeaderTaskDetail = ({
   user,
-  taskKey,
+  taskName,
+  projectId,
+  project,
 }: {
   user: User;
-  taskKey: string | undefined;
+  taskName: string | undefined;
+  project: Project;
+  projectId: string | undefined;
 }) => {
   return (
-    <div className="z-50 bg-white">
+    <div className="z-10 bg-white">
       <Header path={user.photo?.path}>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink
-                href="/your-tasks?page=1&time=deadline&type=all"
+                href="/your-projects"
                 className="text-xl hover:underline"
               >
-                Tasks
+                Projects
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbLink
+                href={`/your-projects/${projectId}`}
+                className="text-xl hover:underline"
+              >
+                {project.projectName}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
 
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-lg font-semibold">
-                {taskKey}
+              <BreadcrumbPage className="text-lg font-semibold text-primary">
+                {taskName}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -44,4 +58,4 @@ const HeaderSubTask = ({
   );
 };
 
-export default HeaderSubTask;
+export default HeaderTaskDetail;

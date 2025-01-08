@@ -20,7 +20,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllTasksByUser, fetchTotalTaskPage } from "@/api/task-api";
 import { format } from "date-fns";
-import TaskTableSkeleton from "./TaskTableSkeleton";
 
 const TaskTable = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,7 +29,7 @@ const TaskTable = () => {
 
   const {
     data: tasks = [],
-    isFetching,
+
     isSuccess,
   } = useQuery({
     queryKey: ["get_all_task", { page: currentPage, time, type }],
@@ -41,7 +40,7 @@ const TaskTable = () => {
     queryFn: () => fetchTotalTaskPage(time, type),
   });
   const navigate = useNavigate();
-  if (isFetching) return <TaskTableSkeleton />;
+  // if (isFetching) return <TaskTableSkeleton />;
 
   return (
     <>

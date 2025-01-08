@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllRooms } from "@/api/room-api";
 import RoomRow from "./RoomRow";
@@ -8,7 +7,7 @@ import { receiveCallSocket, receiveSocket } from "@/app/socketSlice";
 import { AppDispatch } from "@/app/store";
 import { SocketEvent } from "@/constant";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 const ChatSideBar = ({
   handleOpenRoom,
@@ -24,13 +23,7 @@ const ChatSideBar = ({
     queryKey: ["fetch_all_room"],
     queryFn: () => fetchAllRooms(),
   });
-
-  useEffect(() => {
-    dispatch(
-      receiveSocket({ event: SocketEvent.END_CALL, refetchData: refetch }),
-    );
-  }, [dispatch, refetch]);
-  useEffect(() => {
+  const handleReceiveCall = useCallback(() => {
     dispatch(
       receiveCallSocket({
         event: SocketEvent.INVITE_CALL,
@@ -38,20 +31,19 @@ const ChatSideBar = ({
         refetchData: refetch,
       }),
     );
-  }, [dispatch, navigate, refetch]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
+      receiveSocket({ event: SocketEvent.END_CALL, refetchData: refetch }),
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    handleReceiveCall();
+  }, [handleReceiveCall]);
   return (
     <div className="h-full p-4">
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search"
-          className="border-2 border-slate-600 focus-visible:border-none focus-visible:outline-none"
-        />
-        {/* <DialogSearchUser refetch={refetch}>
-          <div className="cursor-pointer rounded-lg bg-slate-600 p-2">
-            <HiPlus className="text-white" />
-          </div>
-        </DialogSearchUser> */}
-      </div>
       <div className="flex-1 space-y-2 py-4">
         <ul className="flex text-sm">
           <li className="cursor-pointer space-y-2 p-2">

@@ -19,8 +19,6 @@ const AppLayout = () => {
   const connectionStatus = useSelector(selectSocket).connectionStatus;
   useEffect(() => {
     if (!currentUser && user && accessToken) {
-      // neu login thanh cong
-
       dispatch(setAccessToken(accessToken));
       dispatch(setCurrentUser(JSON.parse(user)));
       dispatch(connectToSocket(accessToken));
@@ -33,8 +31,8 @@ const AppLayout = () => {
   }, [accessToken, user, dispatch, navigate, currentUser, connectionStatus]);
 
   return (
-    <div className="grid h-screen grid-cols-6">
-      <div className="col-span-1 h-screen">
+    <div className="grid h-screen grid-cols-6 font-sans">
+      <div className="z-20 col-span-1 h-screen w-60 bg-white">
         <Sidebar currentUser={currentUser} />
       </div>
       <div className="col-span-5 flex h-screen flex-1">

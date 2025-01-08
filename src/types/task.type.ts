@@ -1,4 +1,6 @@
+import { Comment } from "./comment.type";
 import { Project } from "./project.type";
+import { SubTask } from "./subTask.type";
 import { User } from "./user.type";
 
 export type Task = {
@@ -11,4 +13,6 @@ export type Task = {
   description: string;
   project: Project;
   user: User;
+  subtasks: SubTask[];
+  comments: Comment[];
 };

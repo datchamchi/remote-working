@@ -1,9 +1,7 @@
 import { parse } from "date-fns";
 
-export function timeAgo(date: Date) {
-  const now = new Date();
-
-  const seconds = Math.floor((Number(now) - Number(date)) / 1000);
+export function timeAgo(from: Date, to: Date) {
+  const seconds = Math.floor((to.getTime() - from.getTime()) / 1000);
 
   const intervals = [
     { label: "year", seconds: 31536000 },
@@ -17,7 +15,7 @@ export function timeAgo(date: Date) {
   for (const interval of intervals) {
     const count = Math.floor(seconds / interval.seconds);
     if (count >= 1) {
-      return `About ${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+      return `About ${count} ${interval.label}${count > 1 ? "s" : ""}`;
     }
   }
 

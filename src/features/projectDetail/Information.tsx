@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { Task } from "@/types/task.type";
 import DialogSearchUser from "./DialogSearchUser";
 import { Link } from "react-router-dom";
+import { DialogLeaveProject } from "./DialogLeaveProject";
 
 const Information = ({
   project,
@@ -74,6 +75,7 @@ const Information = ({
       }),
     );
   }
+
   return (
     <div className="border-2 border-slate-600 px-4 py-4">
       <DialogSearchUser
@@ -83,7 +85,10 @@ const Information = ({
         handleSendInvite={handleSendInvite}
       />
 
-      <Accordion type="multiple" defaultValue={["overview", "member"]}>
+      <Accordion
+        type="multiple"
+        defaultValue={["overview", "member", "leader", "created"]}
+      >
         <div className="py-4">
           <Button className="bg-red-500 hover:bg-red-600">
             <Link to={"analys"} state={{ project: project }}>
@@ -169,15 +174,11 @@ const Information = ({
           <AccordionTrigger>More</AccordionTrigger>
           <AccordionContent>
             <div className="relative text-slate-900">
-              {project.leader === currentUser.email ? (
-                <Button variant={"ghost"} className="border-2 border-slate-800">
-                  Delete Project
-                </Button>
-              ) : (
+              <DialogLeaveProject project={project} currentUser={currentUser}>
                 <Button variant={"ghost"} className="border-2 border-slate-800">
                   Leave Project
                 </Button>
-              )}
+              </DialogLeaveProject>
             </div>
           </AccordionContent>
         </AccordionItem>

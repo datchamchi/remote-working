@@ -106,6 +106,11 @@ export async function fetchTotalTaskPage(
 }
 
 export async function updateTask(taskId: string, dto: UpdateTaskDto) {
+  const { estimate, state } = dto;
+  if (state === "overdue") throw new Error("Task is in overdue status");
+  if (estimate && estimate < new Date()) {
+    throw new Error("Invalid time");
+  }
   try {
     const res = await axiosInstance.patch(`/api/tasks/${taskId}`, dto, {
       headers: { "Content-Type": "application/json" },

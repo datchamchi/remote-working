@@ -58,7 +58,9 @@ const NotiRow = ({ noti, refetch }: { noti: Notify; refetch: () => void }) => {
       </div>
       <div className="flex flex-col gap-2">
         <div className="text-wrap">{noti.content}</div>
-        <div className="text-[12px]">{timeAgo(new Date(noti.createdAt))}</div>
+        <div className="text-[12px]">
+          {timeAgo(new Date(noti.createdAt), new Date())}
+        </div>
         {noti.type === "invite" ? (
           noti.state === "uncheck" ? (
             <div className="flex gap-2 text-[12px]">

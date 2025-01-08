@@ -49,6 +49,8 @@ import { format, parse } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { formatDate } from "@/utils/utils";
 import { selectAuth } from "@/app/authSlice";
+import { toast } from "sonner";
+
 const DialogAddTask = ({
   children,
   project,
@@ -67,23 +69,25 @@ const DialogAddTask = ({
   const checkIsLeader = currentUser
     ? currentUser.email === project.leader
     : false;
-  const [username, setUsername] = useState(currentUser?.name);
+  const [username, setUsername] = useState("");
   const { mutate, isPending } = useMutation({
     mutationFn: addTask,
     onSuccess: () => {
       closeDialog();
+      toast.success("Create Task Successfully");
       refetch();
     },
   });
+  const dayDefault = format(new Date(), "dd-MM-yyyy");
 
   const form = useForm<z.infer<typeof TaskSchema>>({
     resolver: zodResolver(TaskSchema),
     defaultValues: {
       taskName: "",
       description: "",
-      assign: currentUser ? currentUser.id : 0,
-      day: "",
-      time: "",
+      assign: undefined,
+      day: dayDefault,
+      time: format(new Date(), "HH:mm"),
     },
   });
 
@@ -109,7 +113,7 @@ const DialogAddTask = ({
         <DialogContent className="sm:max-w-[420px]" closeDialog={closeDialog}>
           <DialogHeader>
             <DialogTitle className="tracking-widest">Add New Task</DialogTitle>
-            <div className="flex items-center gap-2 font-semibold">
+            <div className="flex items-center gap-2">
               <DialogDescription>{project.projectName}</DialogDescription>
             </div>
           </DialogHeader>
@@ -123,9 +127,7 @@ const DialogAddTask = ({
                 name="taskName"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                    <FormLabel className="col-span-1 font-semibold">
-                      Task Name
-                    </FormLabel>
+                    <FormLabel className="col-span-1">Task Name</FormLabel>
                     <FormControl className="col-span-3">
                       <Input {...field} />
                     </FormControl>
@@ -140,9 +142,7 @@ const DialogAddTask = ({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                    <FormLabel className="col-span-1 font-semibold">
-                      Description
-                    </FormLabel>
+                    <FormLabel className="col-span-1">Description</FormLabel>
                     <FormControl className="col-span-3">
                       <Input {...field} />
                     </FormControl>
@@ -163,10 +163,8 @@ const DialogAddTask = ({
                           <Input
                             type="time"
                             className="w-full cursor-pointer"
-                            defaultValue={field.value}
-                            onChange={(value) => {
-                              field.onChange(value.target.value);
-                            }}
+                            value={field.value || format(new Date(), "HH:mm")}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                       </FormItem>
@@ -178,37 +176,47 @@ const DialogAddTask = ({
                     name="day"
                     render={({ field }) => (
                       <FormItem className="w-1/2">
-                        <FormControl>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "justify-start text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              type="button"
+                              variant={"outline"}
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !field.value && "text-muted-foreground",
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value || format(new Date(), "dd-MM-yyy")}
+                            </Button>
+                          </PopoverTrigger>
 
-                                {field.value || "dd-MM-yyyy"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar
-                                mode="single"
-                                selected={parse(
-                                  field.value,
-                                  "dd-MM-yyyy",
-                                  new Date(),
-                                )}
-                                onSelect={(value) => {
-                                  if (!value) return;
-                                  field.onChange(format(value, "dd-MM-yyy"));
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </FormControl>
+                          <PopoverContent
+                            className="w-auto p-0"
+                            align="start"
+                            style={{
+                              zIndex: 99999,
+                              pointerEvents: "auto",
+                              position: "fixed",
+                            }}
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={
+                                field.value
+                                  ? parse(field.value, "dd-MM-yyyy", new Date())
+                                  : new Date()
+                              }
+                              onSelect={(date) => {
+                                if (date) {
+                                  field.onChange(format(date, "dd-MM-yyyy"));
+                                }
+                              }}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </FormItem>
                     )}
                   />
@@ -220,62 +228,75 @@ const DialogAddTask = ({
                 name="assign"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                    <FormLabel className="col-span-1 font-semibold">
-                      Assign to
-                    </FormLabel>
-                    <FormControl className="col-span-3">
+                    <FormLabel className="col-span-1">Assign to</FormLabel>
+                    <div className="col-span-3">
                       <Popover
                         open={openChooseUser}
                         onOpenChange={setOpenChooseUser}
                       >
-                        <PopoverTrigger asChild disabled={!checkIsLeader}>
+                        <PopoverTrigger asChild>
                           <Button
+                            type="button"
                             variant="outline"
                             role="combobox"
-                            aria-expanded={"false"}
-                            className="w-[280px] justify-between"
+                            disabled={!checkIsLeader}
+                            className="w-full justify-between"
+                            onClick={() => setOpenChooseUser(true)}
                           >
                             {username}
                             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[280px] p-0">
+
+                        <PopoverContent
+                          className="w-[280px] p-0"
+                          align="start"
+                          sideOffset={5}
+                          style={{
+                            zIndex: 99999,
+                            pointerEvents: "auto",
+                            position: "fixed",
+                          }}
+                        >
                           <Command>
                             <CommandInput
                               placeholder="Search User..."
-                              className="h-9 w-full"
+                              className="h-9"
                             />
                             <CommandList>
                               <CommandEmpty>No User Found</CommandEmpty>
                               <CommandGroup>
-                                {project.users.map((user) => (
-                                  <CommandItem
-                                    key={user.id}
-                                    value={"" + user.id}
-                                    onSelect={(currentValue) => {
-                                      field.onChange(Number(currentValue));
-                                      setUsername(user.name);
-                                      setOpenChooseUser(false);
-                                    }}
-                                  >
-                                    {user.name}
-                                    <CheckIcon
-                                      className={cn(
-                                        "ml-auto h-4 w-4",
-                                        field.value === user.id
-                                          ? "opacity-100"
-                                          : "opacity-0",
-                                      )}
-                                    />
-                                  </CommandItem>
-                                ))}
+                                {project.users.map(
+                                  (user) =>
+                                    user.email !== project.leader && (
+                                      <CommandItem
+                                        key={user.id}
+                                        value={user.id.toString()}
+                                        className="cursor-pointer"
+                                        onSelect={() => {
+                                          field.onChange(user.id);
+                                          setUsername(user.name);
+                                          setOpenChooseUser(false);
+                                        }}
+                                      >
+                                        {user.name}
+                                        <CheckIcon
+                                          className={cn(
+                                            "ml-auto h-4 w-4",
+                                            field.value === user.id
+                                              ? "opacity-100"
+                                              : "opacity-0",
+                                          )}
+                                        />
+                                      </CommandItem>
+                                    ),
+                                )}
                               </CommandGroup>
                             </CommandList>
                           </Command>
                         </PopoverContent>
                       </Popover>
-                    </FormControl>
-
+                    </div>
                     <FormMessage className="col-start-1 col-end-5" />
                   </FormItem>
                 )}

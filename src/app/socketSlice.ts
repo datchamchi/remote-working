@@ -35,6 +35,7 @@ export const disconnectFromSocket = createAsyncThunk(
 export const emitSocket = createAsyncThunk(
   "socket/emitSocket",
   async (payload: { event: string; data: any }) => {
+    console.log("Send socket");
     try {
       await socketClient.emit(payload.event, payload.data);
     } catch (err) {
@@ -49,9 +50,11 @@ export const receiveSocket = createAsyncThunk(
       const { event, refetchData } = payload;
       await socketClient.on(event, (data: DataType) => {
         const { content, title } = data;
+        console.log("Receive");
         if (refetchData) {
           setTimeout(refetchData, 2500);
         }
+
         toast.info(title, {
           duration: 2000,
           description: content,
@@ -78,16 +81,13 @@ export const receiveCallSocket = createAsyncThunk(
   async (payload: {
     event: string;
     navigate: (url: string) => void;
-    refetchData: () => void;
+    refetchData?: () => void;
   }) => {
     try {
       const { event, navigate, refetchData } = payload;
-      let i = 0;
       socketClient.on(event, (data) => {
         const { content, title } = data;
-        setTimeout(refetchData, 2500);
-        console.log(i + ": " + event);
-        i++;
+        if (refetchData) setTimeout(refetchData, 2500);
         toast.info(title, {
           duration: 4000,
           action: {

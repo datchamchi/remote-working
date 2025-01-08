@@ -11,6 +11,7 @@ import {
   Projects,
   SignUp,
   SubTaskPage,
+  TaskDetailPage,
   Tasks,
   Teams,
 } from "./pages";
@@ -28,16 +29,7 @@ import ChatContent from "./features/chat/ChatContent";
 import { selectAuth } from "./app/authSlice";
 
 function App() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: true,
-        refetchOnMount: false,
-        staleTime: Infinity,
-      },
-    },
-  });
+  const queryClient = new QueryClient();
   const user = useSelector(selectAuth).user;
   const dispatch = useDispatch<AppDispatch>();
 
@@ -46,6 +38,11 @@ function App() {
     dispatch(receiveSocket({ event: SocketEvent.NOTIFY_USER }));
     dispatch(receiveSocket({ event: SocketEvent.ERROR }));
     dispatch(receiveSocket({ event: SocketEvent.REFUSE_INVITE }));
+    dispatch(
+      receiveSocket({
+        event: SocketEvent.ACCPEPT_INVITE,
+      }),
+    );
     dispatch(receiveSocket({ event: SocketEvent.INVITE_OTHER }));
   }, [dispatch]);
   return (
@@ -68,6 +65,10 @@ function App() {
             <Route
               path="/your-projects/:projectId"
               element={<ProjectDetail />}
+            />
+            <Route
+              path="/your-projects/:projectId/:taskKey"
+              element={<TaskDetailPage />}
             />
             <Route
               path="/your-projects/:projectId/analys"

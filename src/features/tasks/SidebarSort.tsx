@@ -28,7 +28,6 @@ const listSort = [
     types: [
       { name: "All", id: "all" },
       { name: "To do", id: "todo" },
-      { name: "On-going", id: "ongoing" },
       { name: "Done", id: "done" },
       { name: "Overdue", id: "overdue" },
     ],
