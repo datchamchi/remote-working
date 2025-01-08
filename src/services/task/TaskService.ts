@@ -101,24 +101,16 @@ export default class TaskService {
         return numberPage
     }
     async updateTask(user: string, taskId: string, dto: UpdateTaskDto) {
-        const task = await this.taskRepo.findOne({
-            where: { id: Number(taskId) },
-            relations: ['user', 'project'],
-        })
-        if (!task) throw new AppError(400, 'Task not found')
-        if (task.user.email !== user && task.project.leader !== user)
-            throw new AppError(403, 'User is not permission to update task')
         const { description, estimate, state, assign } = dto
-
-        if (description) task.description = description
-        if (estimate) task.estimate = estimate
-        if (state) task.state = state
-        if (assign) {
-            const user = await this.userRepo.findOne({ where: { id: assign } })
-            if (!user) throw new AppError(400, 'User not found')
-            task.user = user
-        }
-        const updated = await this.taskRepo.save(task)
+        const updated = await this.taskRepo.update(
+            { id: Number(taskId) },
+            {
+                description,
+                estimate,
+                state,
+                user: { id: assign },
+            }
+        )
         return updated
     }
     async deleteTask(user: string, taskId: string) {
@@ -126,13 +118,15 @@ export default class TaskService {
             where: { id: Number(taskId) },
             relations: ['user'],
         })
+
         if (!task) throw new AppError(400, 'Task not found')
-        if (task.user.email !== user)
-            throw new AppError(
-                403,
-                "You don't have permission to delete this task"
-            )
         await task.remove()
+        await this.notiRepo.save({
+            content: `Task ${task.taskName}: is removed`,
+            from: user,
+            type: 'inform',
+            user: task.user,
+        })
         return
     }
 
@@ -154,7 +148,7 @@ export default class TaskService {
         return overdueTasks
     }
     static async updateStateOverdueTask(dateTime: Date) {
-        AppDataSource.getRepository(TaskEntity)
+        await AppDataSource.getRepository(TaskEntity)
             .createQueryBuilder()
             .update(TaskEntity)
             .where(
@@ -167,7 +161,14 @@ export default class TaskService {
     async getTask(taskKey: string) {
         const task = await this.taskRepo.findOne({
             where: { key: taskKey },
-            relations: ['subtasks'],
+            relations: [
+                'project',
+                'subtasks',
+                'user',
+                'comments',
+                'comments.user',
+                'comments.user.photo',
+            ],
         })
         return task
     }

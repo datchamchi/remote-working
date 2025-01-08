@@ -9,7 +9,7 @@ projectRouter.post('/', projectController.addProject)
 projectRouter.get('/', projectController.getAllProjects)
 projectRouter.get('/:projectId', projectController.getProject)
 projectRouter.use('/:projectId/analys', projectController.analysProject)
-
+projectRouter.patch('/:projectId/leave', projectController.leaveProject)
 projectRouter.patch('/:projectId/invite', projectController.addUserIntoProject)
 projectRouter.use('/:projectId/tasks', projectTaskRouter)
 export default projectRouter

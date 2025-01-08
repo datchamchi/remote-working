@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm'
+import { Not, Repository } from 'typeorm'
 import { AppError } from '../utils'
 import bcrypt from 'bcrypt'
 import { PhotoEntity, UserEntity } from '../entity'
@@ -42,6 +42,12 @@ export default class UserService {
         return user
     }
 
+    getUserInProject = async (email: string, projectId: number) => {
+        const user = await this.userRepository.find({
+            where: { email: Not(email), projects: { id: projectId } },
+        })
+        return user
+    }
     update = async (
         userId: string,
         dto: UpdateUserDto,

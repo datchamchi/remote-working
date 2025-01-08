@@ -11,6 +11,7 @@ import {
     UserEntity,
 } from '../entity'
 import { SubTaskEntity } from '../entity/subTaskEntity'
+import { CommentEntity } from '../entity/commentEntity'
 
 export const AppDataSource = new DataSource({
     type: 'mysql',
@@ -32,6 +33,7 @@ export const AppDataSource = new DataSource({
         InformNotifyEntity,
         InviteNotifyEntity,
         SubTaskEntity,
+        CommentEntity,
     ],
 
     subscribers: [],

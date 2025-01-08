@@ -135,4 +135,22 @@ export class ProjectController {
             responseError(res, err)
         }
     }
+    leaveProject = async (req: Request, res: Response) => {
+        const { email } = req
+        const { userId } = req.body
+        const { projectId } = req.params
+        try {
+            const project = await this.projectService.leaverProject({
+                email,
+                projectId,
+                userId,
+            })
+            res.status(200).json({
+                status: 'success',
+                data: project,
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
 }

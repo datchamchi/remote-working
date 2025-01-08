@@ -9,9 +9,11 @@ export class SubTaskEntity {
     @Column()
     name: string
 
-    @Column()
-    state: 'todo' | 'done'
+    @Column({ default: 'incomplete' })
+    status: 'complete' | 'incomplete'
 
-    @ManyToOne(() => TaskEntity, (task) => task.subtasks)
+    @ManyToOne(() => TaskEntity, (task) => task.subtasks, {
+        onDelete: 'CASCADE',
+    })
     task: TaskEntity
 }

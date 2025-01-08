@@ -144,7 +144,7 @@ export class TaskController {
         const { taskId } = req.params
         try {
             await this.taskService.deleteTask(email, taskId)
-            res.status(201).json({
+            res.status(204).json({
                 status: 'success',
                 message: 'Delete Task Successfully',
             })

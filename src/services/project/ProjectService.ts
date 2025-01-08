@@ -2,7 +2,12 @@ import { Repository } from 'typeorm'
 
 import { HttpCode, LIMIT_PROJECT_PAGE } from '../../../constant'
 import { AppDataSource } from '../../config'
-import { ProjectEntity, RoomEntity, UserEntity } from '../../entity'
+import {
+    InformNotifyEntity,
+    ProjectEntity,
+    RoomEntity,
+    UserEntity,
+} from '../../entity'
 import { IProjectService } from './IProjectService'
 import { CreateProjectDto } from '../../dto'
 import { AppError } from '../../utils'
@@ -11,10 +16,13 @@ export class ProjectService implements IProjectService {
     private readonly projectRepo: Repository<ProjectEntity>
     private readonly userRepo: Repository<UserEntity>
     private readonly roomRepo: Repository<RoomEntity>
+    private readonly notiRepo: Repository<InformNotifyEntity>
+
     constructor() {
         this.projectRepo = AppDataSource.getRepository(ProjectEntity)
         this.userRepo = AppDataSource.getRepository(UserEntity)
         this.roomRepo = AppDataSource.getRepository(RoomEntity)
+        this.notiRepo = AppDataSource.getRepository(InformNotifyEntity)
     }
     async addProject(
         user: string,
@@ -166,5 +174,44 @@ export class ProjectService implements IProjectService {
             default:
                 throw new AppError(400, 'Bad Request')
         }
+    }
+    async leaverProject({
+        email,
+        projectId,
+        userId,
+    }: {
+        email: string
+        projectId: string
+        userId: string
+    }) {
+        const project = await this.projectRepo.findOne({
+            where: { id: Number(projectId) },
+            relations: ['users', 'tasks', 'tasks.user'],
+        })
+        const room = await this.roomRepo.findOne({
+            where: { id: Number(projectId) },
+            relations: ['users'],
+        })
+        if (!project) throw new AppError(400, 'Project not found')
+        if (!room) throw new AppError(400, 'Room not found')
+        const newListUser = project.users.filter((user) => user.email !== email)
+
+        if (email === project.leader) {
+            const newLeader = project.users.find(
+                (user) => user.id === Number(userId)
+            )
+            if (!newLeader) throw new AppError(400, 'User not found')
+            project.leader = newLeader.email
+        }
+        project.users = newListUser
+
+        project.tasks = project.tasks.filter(
+            (task) => task.user.email !== email
+        )
+        room.users = room.users.filter((user) => user.email !== email)
+        const updatedProject = await this.projectRepo.save(project)
+        await this.roomRepo.save(room)
+
+        return updatedProject
     }
 }

@@ -321,7 +321,6 @@ export class SocketController {
         async (data: { content: string; roomId: number }) => {
             const { email } = client
             const { roomId } = data
-
             const user = await this.userService.getUserByEmail(email)
             // update room status
 
@@ -344,6 +343,12 @@ export class SocketController {
         async (data: { content: string; roomId: number }) => {
             const { email } = client
             const { roomId } = data
+
+            // Kiểm tra trạng thái cuộc gọi trước khi kết thúc
+            const currentRoom = await this.roomService.getRoom2(roomId)
+            if (!currentRoom.isCalling) {
+                return // Nếu cuộc gọi đã kết thúc thì không xử lý tiếp
+            }
 
             // update room status
             const room = await this.roomService.updateCallStatus(roomId, false)
@@ -372,8 +377,8 @@ export class SocketController {
         })
         userInRoomConnected.forEach((u) => {
             if (u.email !== email) {
-                this.io.to(u.socketId).emit(event, content)
-            }
+                return this.io.to(u.socketId).emit(event, content)
+            } else return
         })
     }
 }

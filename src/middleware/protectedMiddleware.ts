@@ -18,7 +18,6 @@ const protectedMiddleware = async (
         })
     }
     try {
-        // console.log(accessToken)
         const { email } = <jwt.UserJwtPayload>(
             jwt.verify(accessToken, String(process.env.ACCESS_API_KEY))
         )

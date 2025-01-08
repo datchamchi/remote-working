@@ -11,6 +11,7 @@ import {
 import { UserEntity } from './userEntity'
 import { ProjectEntity } from './projectEntity'
 import { SubTaskEntity } from './subTaskEntity'
+import { CommentEntity } from './commentEntity'
 
 @Entity('task')
 export class TaskEntity extends BaseEntity {
@@ -44,6 +45,13 @@ export class TaskEntity extends BaseEntity {
     @ManyToOne(() => ProjectEntity, (project) => project.tasks)
     project: ProjectEntity
 
-    @OneToMany(() => SubTaskEntity, (subtask) => subtask.task)
+    @OneToMany(() => SubTaskEntity, (subtask) => subtask.task, {
+        onDelete: 'CASCADE',
+    })
     subtasks: SubTaskEntity[]
+
+    @OneToMany(() => CommentEntity, (comment) => comment.task, {
+        onDelete: 'CASCADE',
+    })
+    comments: CommentEntity[]
 }

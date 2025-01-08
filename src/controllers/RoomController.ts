@@ -52,4 +52,20 @@ export class RoomController {
             responseError(res, err)
         }
     }
+
+    updateStateCalling = async (
+        req: Request<{ id: number }>,
+        res: Response
+    ) => {
+        const { id } = req.params
+        try {
+            const room = await this.roomService.updateCallStatus(id, false)
+            res.status(200).json({
+                status: 'success',
+                data: room,
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
 }

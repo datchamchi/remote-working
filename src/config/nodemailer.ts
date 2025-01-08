@@ -18,8 +18,8 @@ export function sendEmail(to: string, text: string) {
         {
             from: 'remote-working@email.com',
             to,
-            subject: 'Sending Email using Node.js',
-            text,
+            subject: 'Task Deadline Reminder',
+            html: text,
         },
         function (error, info) {
             if (error) {

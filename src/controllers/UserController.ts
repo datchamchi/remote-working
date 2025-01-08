@@ -35,6 +35,32 @@ export class UserController {
             responseError(res, err)
         }
     }
+
+    getAllUserInProject = async (
+        req: Request<
+            object,
+            object,
+            object,
+            { name: string; projectId: number }
+        >,
+        res: Response
+    ) => {
+        const { email } = req
+        const { projectId } = req.query
+        try {
+            const users = await this.userService.getUserInProject(
+                email,
+                projectId
+            )
+
+            res.status(200).json({
+                status: 'success',
+                data: users,
+            })
+        } catch (err) {
+            responseError(res, err)
+        }
+    }
     update = async (
         req: Request<{ userId: string }, object, UpdateUserDto>,
         res: Response
